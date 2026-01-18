@@ -51,8 +51,9 @@
                             <p>Products</p>
                         </a>
                     </li>
+                    <!-- ✅ FIXED: Categories menu item -->
                     <li class="nav-item">
-                        <a th:href="@{/category}" class="nav-link">
+                        <a th:href="@{/admin/category}" class="nav-link">
                             <i class="nav-icon fas fa-list"></i>
                             <p>Categories</p>
                         </a>
@@ -115,7 +116,8 @@
                             <div class="icon">
                                 <i class="fas fa-list"></i>
                             </div>
-                            <a th:href="@{/category}" class="small-box-footer">
+                            <!-- ✅ FIXED: Single anchor tag -->
+                            <a th:href="@{/admin/category}" class="small-box-footer">
                                 More info <i class="fas fa-arrow-circle-right"></i>
                             </a>
                         </div>
