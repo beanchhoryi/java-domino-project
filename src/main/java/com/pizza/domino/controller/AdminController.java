@@ -16,7 +16,6 @@ public class AdminController {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    private final CategoryService categoryService;
 
     @GetMapping("/dashboard")
     @PreAuthorize("hasRole('ADMIN')")
@@ -24,34 +23,4 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    public AdminController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
-    @GetMapping("/category")
-    public String categoryList(Model model) {
-        model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("countItem", categoryService.count());
-        return "admin/category/index";
-    }
-
-    @GetMapping("/category/create")
-    public String categoryCreate() {
-        return "admin/category/create";
-    }
-
-    @GetMapping("/category/edit/{id}")
-    public String categoryEdit() {
-        return "admin/category/update";
-    }
-
-    @GetMapping("/products")
-    public String productList() {
-        return "admin/product/index";
-    }
-
-    @GetMapping("/users")
-    public String userList() {
-        return "admin/user/index";
-    }
 }

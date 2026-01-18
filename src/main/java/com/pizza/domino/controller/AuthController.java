@@ -3,30 +3,9 @@ package com.pizza.domino.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Controller
-public class PageController {
-
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-
-    @GetMapping("/menu")
-    public String menu() {
-        return "pages/menu";
-    }
-
-    @GetMapping("/cart")
-    public String cart() {
-        return "pages/cart";
-    }
-
-    @GetMapping("/contacts")
-    public String contact() {
-        return "pages/contact";
-    }
+public class AuthController {
 
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -44,10 +23,5 @@ public class PageController {
         model.addAttribute("phone", "");
         model.addAttribute("gender", "");
         return "pages/register";
-    }
-
-    @GetMapping("/profile/settings")
-    public String profileSettings() {
-        return "pages/profile_settings";
     }
 }
