@@ -11,7 +11,6 @@ public class Category {
 
     @Column(name = "category_name")
     private String categoryName;
-
     private String description;
 
     public Category() {
