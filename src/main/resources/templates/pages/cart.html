@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Domino's</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body style="margin: 0px 0px 0px 0px;" th:attr="data-user-authenticated=${#authentication} ? 'true' : 'false'">
+<div class="menu">
+    <div class="container_menu">
+        <div class="container_menu_left">
+            <ul>
+                <a th:href="@{/}"><li><img th:src="@{/image/domino_logo.png}" width="65" height="65"></li></a>
+                <a th:href="@{/}"><li>Home</li></a>
+                <a th:href="@{/menu}"><li>Menu</li></a>
+                <a th:href="@{/cart}"><li>Order</li></a>
+                <a th:href="@{/contacts}"><li>Contact</li></a>
+            </ul>
+        </div>
+        <div class="container_menu_right">
+            <ul>
+                <li><p id="numberItemInCart">0</p></li>
+                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25px" height="25px"></a></li>
+                <li><a th:href="@{/login}"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="body_container">
+    <p>Your cart is empty</p>
+    <a th:href="@{/menu}"><button>Start Order Here</button></a>
+</div>
+<footer style="background-color: #0b648f; width: 100%;">
+    <table>
+        <td>
+            <div class="footer_left">
+                <p>Our Social media:</p>
+                <ul>
+                    <li><a href="https://www.facebook.com/DominosPizzaCambodia/" target="_blank"><img th:src="@{/icon/facebook.png}"></a></li>
+                    <li><a href="https:/8www.instagram.com/dominos/?hl=en" target="_blank"><img th:src="@{/icon/instagram.png}"></a></li>
+                    <li><a href="https://www.tiktok.com/@dominos.pizza.cam?is_from_webapp=1&sender_device=pc" target="_blank"><img th:src="@{/icon/tiktok.png}"></a></li>
+                    <li><a href="https://www.youtube.com/@dominos" target="_blank"><img th:src="@{/icon/youtube.png}"></a></li>
+                </ul>
+            </div>
+        </td>
+        <td>
+            <div class="footer_right">
+                <p></p>
+            </div>
+        </td>
+    </table>
+    <div class="description">
+        <p><br><br>Any Delivery Charge is not a tip paid to your driver. <br>Please reward your driver for awesomeness. Our drivers carry less than 10$. Minimum purchase required for delivery and for mode of payment is strictly Cash On Delivery. The 30-minute Delivery Commitment starts from the time of completion of call. <br><br>Our Operating hours: 10:00 AM - 10:00 PM and Delivery service start from 10:00 AM - 9:30 PM.
+            <br><br> Domino's Pizza Cambodia reserves the right to modify or supplement this policy at any time. If a material change to the terms of this policy is made, Domino's will post a notice on its homepage and a link to the new policy.
+            Our Guarantee: If you are not completely satisfied with your Domino's Pizza experience, we will make it right or refund your money.
+        </p>
+    </div>
+</footer>
+<script>
+    window.URLS = {
+        menu: "/menu",
+        cart: "/cart",
+        home: "/"
+    };
+</script>
+<script th:src="@{/js/cart.js}"></script>
+</body>
+</html>

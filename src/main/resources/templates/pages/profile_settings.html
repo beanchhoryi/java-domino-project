@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Settings — Domino Pizza</title>
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <script th:src="@{/js/cart.js}" defer></script>
+</head>
+<body>
+
+<!------------------- MENU ------------------->
+<div class="menu">
+    <div class="container_menu">
+        <div class="container_menu_left">
+            <ul>
+                <a th:href="@{/}"><li><img th:src="@{/image/domino_logo.png}" width="65" height="65"></li></a>
+                <a th:href="@{/}"><li>Home</li></a>
+                <a th:href="@{/menu}"><li>Menu</li></a>
+                <a th:href="@{/cart}"><li>Order</li></a>
+                <a th:href="@{/contacts}"><li>Contact</li></a>
+            </ul>
+        </div>
+        <div class="container_menu_right">
+            <ul>
+                <li><p id="numberItemInCart">0</p></li>
+                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25px" height="25px"></a></li>
+                <li><a th:href="@{/login}"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<br/><br/><br/><br/><br/><br/>
+
+<!------------------- FORM ------------------->
+<div class="profile-layout">
+    <!-- Left Sidebar Menu -->
+    <aside class="sidebar-menu">
+        <div style="text-align: center; font-size:25px; font-weight: bold;">
+            <a>Setting</a>
+        </div>
+        <br/>
+        <div class="admin-dashboard-btn-wrapper">
+            <a th:href="@{/profile/settings}" class="action-btn">Edit Profile</a>
+        </div>
+        <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="admin-dashboard-btn-wrapper">
+            <a th:href="@{/manager/dashboard}" class="action-btn">Admin Dashboard</a>
+        </div>
+        <div style="margin-top: 200%;"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="container profile-container">
+        <header class="profile-header">
+            <h1 class="profile-title">Edit profile</h1>
+            <div class="avatar-wrapper">
+                <img id="preview" th:src="${user.image != null} ? @{'/images/profiles/' + ${user.image}} : @{/image/default-avatar.png}"
+                     alt="Profile" class="avatar">
+                <input type="file" name="image" id="id_image" accept="image/*">
+                <label for="id_image" class="avatar-label">Change</label>
+                <br/> <br/>
+            </div>
+        </header>
+
+        <!-- Messages -->
+        <div th:if="${#strings.length(message) > 0}" class="messages">
+            <p th:text="${message}" th:class="${messageType}"></p>
+        </div>
+
+        <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data" class="profile-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" th:value="${user.firstName}" class="form-control">
+                    <span class="check-icon"></span>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" th:value="${user.lastName}" class="form-control">
+                    <span class="check-icon"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group full">
+                    <label>Email</label>
+                    <input type="email" name="email" th:value="${user.email}" class="form-control">
+                    <span class="check-icon"></span>
+                </div>
+            </div>
+            <!-- Address -->
+            <div class="form-row">
+                <div class="form-group full">
+                    <label>Address</label>
+                    <input type="text" name="address" th:value="${user.address}" class="form-control">
+                    <span class="check-icon"></span>
+                </div>
+            </div>
+            <!-- Phone / City -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="text" name="phone" th:value="${user.phone}" class="form-control">
+                    <span class="check-icon"></span>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" name="preferredStore" th:value="${user.preferredStore}" class="form-control">
+                    <span class="check-icon"></span>
+                </div>
+            </div>
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-save">Save</button>
+            </div>
+        </form>
+        <div class="logout-wrapper">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-logout">Log Out</button>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

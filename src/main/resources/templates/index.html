@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domino Pizza</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <script th:src="@{/js/cart.js}" defer></script>
+</head>
+<body style="margin: 0px 0px 0px 0px;">
+<div class="menu">
+    <div class="container_menu">
+        <div class="container_menu_left">
+            <ul>
+                <a th:href="@{/}"><li><img th:src="@{/image/domino_logo.png}" width="65" height="65"></li></a>
+                <a th:href="@{/}"><li>Home</li></a>
+                <a th:href="@{/menu}"><li>Menu</li></a>
+                <a th:href="@{/cart}"><li>Order</li></a>
+                <a th:href="@{/contacts}"><li>Contact</li></a>
+            </ul>
+        </div>
+        <div class="container_menu_right">
+            <ul>
+                <li><p id="numberItemInCart">0</p></li>
+                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25px" height="25px"></a></li>
+                <li><a th:href="@{/login}"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="body_container">
+    <div class="cover">
+        <img th:src="@{/image/promo_image/pizza3.jpg}">
+        <h3>Get Your Domino Now</h3>
+        <a th:href="@{/menu}">
+            <button>See Menu</button>
+        </a>
+    </div>
+
+    <div class="promotion">
+        <h1>Our Promotion</h1>
+        <div class="promotion_container">
+            <div class="promotion_text">
+                <h2>Enjoy Our</h2>
+                <h2>Amazing</h2>
+                <h2>Promotion</h2>
+            </div>
+            <div class="image_container">
+                <div class="left">
+                    <img th:src="@{/image/promo_image/promotion 1.png}">
+                    <img th:src="@{/image/promo_image/promotion 4.png}">
+                </div>
+                <div class="right">
+                    <img th:src="@{/image/promo_image/promotion 2.png}">
+                    <img th:src="@{/image/promo_image/promotion 3.png}">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text">
+        <video autoplay loop muted>
+            <source th:src="@{/video/gradient.mp4}" type="video/mp4">
+        </video>
+        <table>
+            <td>Quality.</td>
+            <td>Taste.</td>
+            <td>Service.</td>
+        </table>
+    </div>
+</div>
+<footer style="background-color: #0b648f; width: 100%;">
+    <table>
+        <td>
+            <div class="footer_left">
+                <p>Our Social media:</p>
+                <ul>
+                    <li><a href="https://www.facebook.com/DominosPizzaCambodia/" target="_blank"><img th:src="@{/icon/facebook.png}"></a></li>
+                    <li><a href="https://www.instagram.com/dominos/?hl=en" target="_blank"><img th:src="@{/icon/instagram.png}"></a></li>
+                    <li><a href="https://www.tiktok.com/@dominos.pizza.cam?is_from_webapp=1&sender_device=pc" target="_blank"><img th:src="@{/icon/tiktok.png}"></a></li>
+                    <li><a href="https://www.youtube.com/@dominos" target="_blank"><img th:src="@{/icon/youtube.png}"></a></li>
+                </ul>
+            </div>
+        </td>
+        <td>
+            <div class="footer_right">
+                <p></p>
+            </div>
+        </td>
+    </table>
+    <div class="description">
+        <p><br><br>Any Delivery Charge is not a tip paid to your driver. <br>Please reward your driver for awesomeness. Our drivers carry less than 10$. Minimum purchase required for delivery and for mode of payment is strictly Cash On Delivery. The 30-minute Delivery Commitment starts from the time of completion of call. <br><br>Our Operating hours: 10:00 AM - 10:00 PM and Delivery service start from 10:00 AM - 9:30 PM.
+            <br><br> Domino's Pizza Cambodia reserves the right to modify or supplement this policy at any time. If a material change to the terms of this policy is made, Domino's will post a notice on its homepage and a link to the new policy.
+            Our Guarantee: If you are not completely satisfied with your Domino's Pizza experience, we will make it right or refund your money.
+        </p>
+    </div>
+</footer>
+</body>
+</html>

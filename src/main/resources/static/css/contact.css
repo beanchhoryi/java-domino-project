@@ -1,0 +1,108 @@
+.body_container{
+    margin-bottom: 200px;
+}
+.body_container img{
+    width: 60px;
+    height: auto;
+    margin-left: 50%;
+    margin-top: 20px;
+    translate: -50%;
+    justify-content: center;
+}
+#phoneNumber{
+    display: flex;
+    flex-direction: row;
+    width: 600px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 50%;
+    translate: -50%;
+
+}
+.body_container h1{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #0b648f;
+    font-size: 50px;
+    text-align: center;
+    margin-top: 0;
+    text-align: center; 
+}
+#copybutton{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: 40px;
+    width: 30px;
+    margin-left: 10px;
+    margin-top: 15px;
+    translate: 0 -50%;
+
+}
+#copybutton img{
+    width: 30px;
+    margin-top: 0;
+}
+#copied{
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    height: 20px;
+    border: none;
+    width: 60px;
+    height: 20px;
+    margin-left: 10px;
+    margin-top: 5px;
+    translate: 0 -50%;    
+    background-color: #e21737;
+    border-radius: 10px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 400ms ease-in-out, max-height 200ms ease-in-out;
+}
+#copied.visible {
+    opacity: 1;
+    max-height: 100px;
+}
+.location_container{
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(1, 1000px);
+    top: 300px;
+    left: 50%;
+    translate: -50%;
+    gap: 25px;
+}
+.location{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px 0.05px #d6d6d6;
+}
+.location img{
+    position: absolute;
+    margin-left: 50px;   
+    width: 70px;
+    height: 70px;
+    transition: all 200ms ease-in-out;
+}
+.location img:hover{
+    scale: 1.1;
+}
+.location p{
+    position: absolute;
+    margin-top: 4%;
+    margin-left: 10%;
+    color: black;
+}
+.location .map_pin{
+    position: absolute;
+    top: 33%;
+    right: 10px;
+    translate: -50% -50%;
+    width: 35px;
+    height: 35px;
+}

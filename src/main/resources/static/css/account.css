@@ -1,0 +1,105 @@
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+body {
+    padding: 20px; letter-spacing: 1px;
+    font-family: sans-serif; font-size: 15px;
+}
+#domino_logo{
+    height: 130px;
+    margin-left: 50%;
+    translate: -50%;
+}
+#registrationForm {
+    width: 800px; margin: 0 auto; padding: 10px 20px 20px 20px;
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 1px 1px 10px 0.05px #d6d6d6; border-radius: 5px;
+}
+#registrationForm p{ 
+    text-align: center; font-size: 9px;
+    width: 100%;
+    color: black; font-weight: normal; 
+    padding: 8px; border-radius: 5px;
+    margin-bottom: 10px;
+}
+#registrationForm h3 { 
+    text-align: center; font-size: 30px; margin-bottom: 5px;
+    width: 100%;
+    color: #0b648f; font-weight: normal; 
+    padding: 8px; text-transform: uppercase; border-radius: 5px;
+}
+#registrationForm .row { 
+    padding: 10px 0;  width: 100%; 
+}
+
+#registrationForm input {
+    width: 100%; padding: 10px 10px 10px 70px; border-radius: 6px;
+    border: 1px solid grey; outline: none;
+    font-size: 16px;
+}
+#registrationForm input[type="number"]::-webkit-inner-spin-button,
+    #registrationForm input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+#registrationForm input[type=radio] {
+    width: 20px; height: 20px; padding: 0;
+    accent-color: #0b648f;
+    transition: all ease-in-out 200ms;
+}
+#registrationForm input[type=radio]::after{
+   opacity: 0;
+}
+#registrationForm label {
+    justify-content: start; text-align: left; gap: 5px;
+    width: 50%; display: flex;
+    align-items: center;
+}
+#registrationForm input[type="button"] {
+    padding: 10px; color: white;
+    font-size: 18px; font-weight: bold;
+    background-color: #0b648f; border-radius: 5px;
+    cursor: pointer;
+    transition: all ease-in-out 200ms;
+    width: 40%;
+    translate: -50%;
+    margin-left: 50%;
+}
+#registrationForm input[type="button"]:hover{
+    background-color: #094d6f;
+}
+#registrationForm input[type="button"]:active{
+    scale: 0.97;
+}
+#txtEmail {
+    background-image: url("../image/mail.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+}
+#txtName {
+    background-image: url("../image/user.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+}
+#txtPhoneNum{
+    background-image: url("../image/phonenumber.png");
+    background-size: 23px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+}
+#txtPassword {
+    background-image: url("../image/padlock.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+}
+#txtConfirm {
+    background-image: url("../image/security-access.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+}
+

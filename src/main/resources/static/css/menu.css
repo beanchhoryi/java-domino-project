@@ -1,0 +1,89 @@
+.menu_container h1{
+    background-color: #0b648f;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 40px;
+    width: 100%;
+    height: 75px;
+    padding-top: 15px;
+    text-align: center;     
+    justify-content: center;
+    margin-top: 0;
+}
+.menu_container{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+}
+.pizza_menu{
+    display: grid;
+    grid-template-columns: repeat(3, 400px);
+    gap: 20px;
+    margin-left: 40%;
+    translate: -50%;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+.pizza_menu .menu{
+    position: relative;
+    height: 350px;
+    background-color:white;
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px 0.05px #d6d6d6;
+    overflow: hidden;
+
+}
+.pizza_menu .menu img{
+    width: 100%;
+    border-radius: 10px;
+    transition: all 250ms ease-in-out;
+}
+.pizza_menu .menu img:hover{
+    scale: 1.02;
+}
+.pizza_menu .menu .info_bar{
+    color: white;
+    display: flex;
+    position: absolute;
+    background-color: #e21737;
+    bottom: 0;
+    border-radius: 0px 0px 5px 5px;
+    height: 70px;
+    width: 380px;
+    border: none;
+    text-align: right;
+    padding-right: 20px;
+    transition: all 250ms ease-in-out;
+}
+.pizza_menu .menu img:hover ~ .info_bar{
+    background-color: #cf1632;
+}
+.info_bar p{
+    position: absolute;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    top: -5px;
+    left: 20px;
+    text-align: left;
+
+}
+.info_bar button{
+    color: white;
+    position: absolute;
+    background-color: #0b648f;  
+    border: none;
+    height: 30px;
+    width: 100px;
+    top: 50%;
+    right: -25px;
+    transition: 200ms all ease-in-out;
+    translate: -50% -50%;
+    border-radius: 10px;
+    box-shadow: 1px 1px 7px 0.09px #951024;
+    cursor: pointer;
+
+}
+.pizza_menu .menu .info_bar button:hover{
+    scale: 1.05;
+}
