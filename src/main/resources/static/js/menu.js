@@ -2,13 +2,43 @@ document.addEventListener("DOMContentLoaded", () => {
     loadMenu();
 });
 
+// --------------------------------------------------
+// Category → folder mapping
+// --------------------------------------------------
+const categoryFolderMap = {
+    "Fast Food": "pizza",
+    "Drink": "drink",
+    "Side Dish": "side_dishes"
+};
+
+// --------------------------------------------------
+// Load menu (PRODUCT-DRIVEN)
+// --------------------------------------------------
 function loadMenu() {
-    fetch("http://localhost:8080/admin/category/api")
+    fetch("http://localhost:8080/api/admin/products")
         .then(res => {
-            if (!res.ok) throw new Error("Failed to load menu");
+            if (!res.ok) throw new Error("Failed to load products");
             return res.json();
         })
-        .then(data => renderMenu(data))
+        .then(products => {
+            const categoryMap = {};
+
+            products.forEach(product => {
+                const cat = product.category;
+
+                if (!categoryMap[cat.id]) {
+                    categoryMap[cat.id] = {
+                        id: cat.id,
+                        categoryName: cat.categoryName,
+                        products: []
+                    };
+                }
+
+                categoryMap[cat.id].products.push(product);
+            });
+
+            renderMenu(Object.values(categoryMap));
+        })
         .catch(err => {
             console.error("Menu load error:", err);
             document.getElementById("menuContainer").innerHTML =
@@ -16,34 +46,14 @@ function loadMenu() {
         });
 }
 
-fetch("http://localhost:8080/api/admin/products")
-    .then(res => res.json())
-    .then(products => {
-        const map = {};
-
-        products.forEach(p => {
-            const cat = p.category;
-
-            if (!map[cat.id]) {
-                map[cat.id] = {
-                    id: cat.id,
-                    categoryName: cat.categoryName,
-                    products: []
-                };
-            }
-
-            map[cat.id].products.push(p);
-        });
-
-        renderMenu(Object.values(map));
-    });
-
-
+// --------------------------------------------------
+// Render menu
+// --------------------------------------------------
 function renderMenu(categories) {
     const container = document.getElementById("menuContainer");
     container.innerHTML = "";
 
-    if (!categories || categories.length === 0) {
+    if (!categories.length) {
         container.innerHTML = "<p>No categories found.</p>";
         return;
     }
@@ -63,20 +73,23 @@ function renderMenu(categories) {
         const productContainer =
             document.getElementById(`category-${category.id}`);
 
-        if (!category.products || category.products.length === 0) {
+        if (!category.products.length) {
             productContainer.innerHTML =
                 "<p>No products in this category.</p>";
             return;
         }
 
         category.products.forEach(product => {
+            const folder =
+                categoryFolderMap[category.categoryName] || "default";
+z
             const img = product.image
-                ? `/images/products/${product.image}`
-                : `/images/no-image.png`;
+                ? `/image/${folder}/${product.image}`
+                : `/image/no-image.png`;
 
             productContainer.innerHTML += `
                 <div class="menu">
-                    <img src="${img}" width="200">
+                    <img src="${img}" width="200" alt="${product.productName}">
                     <div class="info_bar">
                         <p>
                             <b>${product.productName}</b><br>
