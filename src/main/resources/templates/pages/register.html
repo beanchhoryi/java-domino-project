@@ -3,86 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Form</title>
+    <title>Registration | Domino's Pizza</title>
     <link rel="stylesheet" th:href="@{/css/account.css}">
 </head>
 <body>
 <div class="container">
-    <form th:action="@{/register}" method="post" id="registrationForm">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
+    <form id="registrationForm">
         <img id="domino_logo" th:src="@{/image/domino_logo.png}" alt="Domino's Logo">
         <p>All user information will be collected by Domino's Pizza <br>All rights will be legally reserved</p>
         <hr>
         <h3><b>Registration</b></h3>
         <hr>
 
-        <!-- Error/Success messages null-safe -->
-        <div th:if="${message != null and #strings.length(message) > 0}">
-            <div class="alert error" th:text="${error}"></div>
-        </div>
-        <div th:if="${error != null and #strings.length(error) > 0}">
-            <div class="alert success" th:text="${success}"></div>
-        </div>
+        <!-- JS messages -->
+        <div id="errorBox" class="alert error" style="display:none;"></div>
+        <div id="successBox" class="alert success" style="display:none;"></div>
 
         <br>
 
         <div class="row">
-            <input type="email"
-                   name="email"
-                   id="txtEmail"
-                   placeholder="Email *"
-                   th:value="${email ?: ''}"
-                   required>
+            <input type="text" id="txtUsername" placeholder="Username *" required>
         </div>
 
         <div class="row">
-            <input type="text"
-                   name="firstName"
-                   id="txtName"
-                   placeholder="Name *"
-                   th:value="${firstName ?: ''}"
-                   required>
+            <input type="email" id="txtEmail" placeholder="Email *" required>
+        </div>
+
+        <div class="row" style="display:flex; gap:10px;">
+            <input type="text" id="txtFirstName" placeholder="First Name *" required style="flex:1;">
+            <input type="text" id="txtLastName" placeholder="Last Name" style="flex:1;">
         </div>
 
         <div class="row">
-            <input type="tel"
-                   name="phone"
-                   id="txtPhoneNum"
-                   placeholder="Phone Number *"
-                   th:value="${phone ?: ''}"
-                   required>
+            <input type="tel" id="txtPhoneNum" placeholder="Phone Number *" required>
+        </div>
+
+        <div class="row">
+            <input type="text" id="txtAddress" placeholder="Address">
         </div>
 
         <div class="row" style="display: flex; gap: 20px;">
-            <label>
-                <input type="radio" name="gender" value="Male"
-                       th:checked="${gender == 'Male'}"> Male
-            </label>
-            <label>
-                <input type="radio" name="gender" value="Female"
-                       th:checked="${gender == 'Female'}"> Female
-            </label>
-            <label>
-                <input type="radio" name="gender" value="Other"
-                       th:checked="${gender == 'Other'}"> Not given
-            </label>
+            <label><input type="radio" name="gender" value="Male" checked> Male</label>
+            <label><input type="radio" name="gender" value="Female"> Female</label>
+            <label><input type="radio" name="gender" value="Other"> Not given</label>
         </div>
 
         <div class="row">
-            <input type="password"
-                   name="password"
-                   id="txtPassword"
-                   placeholder="Password *"
-                   required>
+            <input type="password" id="txtPassword" placeholder="Password *" required>
         </div>
 
         <div class="row">
-            <input type="password"
-                   name="confirmPassword"
-                   id="txtConfirm"
-                   placeholder="Confirm your password *"
-                   required>
+            <input type="password" id="txtConfirm" placeholder="Confirm your password *" required>
         </div>
 
         <br>
@@ -90,8 +61,87 @@
         <br>
 
         <input type="submit" value="SignUp" id="buttonSubmit" class="submit-btn">
+
+        <p style="margin-top:10px;">
+            Already have an account? <a th:href="@{/login}">Login here</a>
+        </p>
     </form>
 </div>
+
+<script>
+    function showError(msg) {
+        const e = document.getElementById("errorBox");
+        const s = document.getElementById("successBox");
+        s.style.display = "none";
+        e.textContent = msg;
+        e.style.display = "block";
+    }
+
+    function showSuccess(msg) {
+        const e = document.getElementById("errorBox");
+        const s = document.getElementById("successBox");
+        e.style.display = "none";
+        s.textContent = msg;
+        s.style.display = "block";
+    }
+
+    document.getElementById("registrationForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("txtUsername").value.trim();
+        const email = document.getElementById("txtEmail").value.trim();
+        const firstName = document.getElementById("txtFirstName").value.trim();
+        const lastName = document.getElementById("txtLastName").value.trim();
+        const phone = document.getElementById("txtPhoneNum").value.trim();
+        const address = document.getElementById("txtAddress").value.trim();
+        const gender = document.querySelector('input[name="gender"]:checked')?.value || "Other";
+        const password = document.getElementById("txtPassword").value;
+        const confirmPassword = document.getElementById("txtConfirm").value;
+
+        if (password !== confirmPassword) {
+            showError("Passwords do not match.");
+            return;
+        }
+
+        const payload = {
+            username,
+            email,
+            password,
+            firstName,
+            lastName,
+            gender,
+            phone,
+            address
+        };
+
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                let msg = "Registration failed.";
+                try { msg = await res.text(); } catch (_) {}
+                showError(msg);
+                return;
+            }
+
+            const data = await res.json();
+
+            // store JWT and go home
+            localStorage.setItem("token", data.token);
+            showSuccess("Registration successful! Redirecting...");
+            setTimeout(() => window.location.href = "/", 500);
+
+        } catch (err) {
+            showError("Server error. Please try again.");
+        }
+    });
+</script>
+
+<!-- Optional: remove this if it submits to /register -->
 <script th:src="@{/js/account_validation.js}"></script>
 </body>
 </html>
