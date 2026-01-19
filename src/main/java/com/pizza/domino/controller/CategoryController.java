@@ -19,13 +19,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @ResponseBody
-    @GetMapping("/api")
-    public List<Category> apiCategories() {
-        return categoryService.findAll();
-    }
-
-    // LIST
+    // LIST PAGE
     @GetMapping
     public String categoryList(Model model) {
         model.addAttribute("categories", categoryService.findAll());
@@ -61,7 +55,7 @@ public class CategoryController {
                                  @ModelAttribute Category category) {
         Category old = categoryService.findById(id);
         old.setCategoryName(category.getCategoryName());
-        old.setDescription(category.getDescription());  // FIX: Add this line
+        old.setDescription(category.getDescription());
         categoryService.save(old);
         return "redirect:/admin/category";
     }
@@ -71,5 +65,18 @@ public class CategoryController {
     public String deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
         return "redirect:/admin/category";
+    }
+
+    // ✅ ADD THESE API METHODS FOR PRODUCT FORMS
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Category> getAllCategoriesApi() {
+        return categoryService.findAll();
+    }
+
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public Category getCategoryByIdApi(@PathVariable Long id) {
+        return categoryService.findById(id);
     }
 }

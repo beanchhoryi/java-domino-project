@@ -1,45 +1,31 @@
 package com.pizza.domino.service;
 
 import com.pizza.domino.model.Product;
-import com.pizza.domino.repository.ProductRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-@Service
-public class ProductService {
+public interface ProductService {
 
-    private final ProductRepository productRepository;
+    // ✅ ADD THESE METHODS
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    // Get all products
+    List<Product> getAll();
 
-    public List<Product> getAll() {
-        return productRepository.findAll();
-    }
+    // Get product by ID
+    Product getById(Long id);
 
-    public Product getById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-    }
+    // Create new product
+    Product create(Product product);
 
-    public Product create(Product product) {
-        return productRepository.save(product);
-    }
+    // Update existing product
+    Product update(Long id, Product product);
 
-    public Product update(Long id, Product product) {
-        Product existing = getById(id);
-        existing.setProductName(product.getProductName());
-        existing.setPrice(product.getPrice());
-        existing.setStockQty(product.getStockQty());
-        existing.setDescription(product.getDescription());
-        existing.setImage(product.getImage());
-        existing.setCategory(product.getCategory());
-        return productRepository.save(existing);
-    }
+    // Delete product
+    void delete(Long id);
 
-    public void delete(Long id) {
-        productRepository.deleteById(id);
-    }
+    // ✅ ADD THIS MISSING METHOD
+    long count();
+
+    // Optional: Other methods you might need
+    List<Product> findByCategoryId(Long categoryId);
+    List<Product> searchByName(String keyword);
 }

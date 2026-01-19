@@ -56,6 +56,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-6">
+                        <!-- In the products stats card (around line 50) -->
                         <div class="small-box bg-success">
                             <div class="inner">
                                 <h3 th:text="${productCount}">53</h3>
@@ -64,7 +65,8 @@
                             <div class="icon">
                                 <i class="fas fa-pizza-slice"></i>
                             </div>
-                            <a th:href="@{/products}" class="small-box-footer">
+                            <!-- ✅ UPDATED LINK -->
+                            <a th:href="@{/admin/products}" class="small-box-footer">
                                 More info <i class="fas fa-arrow-circle-right"></i>
                             </a>
                         </div>
