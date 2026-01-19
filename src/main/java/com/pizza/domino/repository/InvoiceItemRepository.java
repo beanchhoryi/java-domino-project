@@ -1,9 +1,9 @@
 package com.pizza.domino.repository;
 
-import com.pizza.domino.model.Invoice;
+import com.pizza.domino.model.InvoiceItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
+public interface InvoiceItemRepository extends JpaRepository<InvoiceItem, Long> {
 }

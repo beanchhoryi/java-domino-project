@@ -215,8 +215,9 @@ async function checkout() {
     checkoutBtn.disabled = true;
 
     try {
-        const response = await fetch('/create-invoice/', {
+        const response = await fetch('/create-invoice', {     // ← remove trailing slash
             method: 'POST',
+            credentials: 'include',                           // ← important for cookies (session & CSRF)
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken'),

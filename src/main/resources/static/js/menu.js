@@ -82,7 +82,6 @@ function renderMenu(categories) {
         category.products.forEach(product => {
             const folder =
                 categoryFolderMap[category.categoryName] || "default";
-z
             const img = product.image
                 ? `/image/${folder}/${product.image}`
                 : `/image/no-image.png`;
