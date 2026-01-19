@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
@@ -16,6 +17,12 @@ public class CategoryController {
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
+    }
+
+    @ResponseBody
+    @GetMapping("/api")
+    public List<Category> apiCategories() {
+        return categoryService.findAll();
     }
 
     // LIST
