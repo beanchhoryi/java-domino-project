@@ -1,100 +1,97 @@
-(() => {
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
+    loadMenu();
+});
 
-        // ------------------------------------------------------------
-        // 1. Cart storage
-        // ------------------------------------------------------------
-        const CART_KEY = 'cart';
+function loadMenu() {
+    fetch("http://localhost:8080/admin/category/api")
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to load menu");
+            return res.json();
+        })
+        .then(data => renderMenu(data))
+        .catch(err => {
+            console.error("Menu load error:", err);
+            document.getElementById("menuContainer").innerHTML =
+                "<p>Failed to load menu</p>";
+        });
+}
 
-        const getCart = () => {
-            try {
-                return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-            } catch {
-                return [];
-            }
-        };
+fetch("http://localhost:8080/api/admin/products")
+    .then(res => res.json())
+    .then(products => {
+        const map = {};
 
-        let cart = getCart();
+        products.forEach(p => {
+            const cat = p.category;
 
-        const saveCart = () =>
-            localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
-        // ------------------------------------------------------------
-        // 2. Cart badge
-        // ------------------------------------------------------------
-        const updateBadge = () => {
-            const badge = document.getElementById('numberItemInCart');
-            if (badge) badge.textContent = cart.length;
-        };
-
-        updateBadge();
-
-        // ------------------------------------------------------------
-        // 3. ADD TO CART (EVENT DELEGATION ✅)
-        // ------------------------------------------------------------
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.add-to-cart');
-            if (!btn) return;
-
-            const id = btn.dataset.id;
-            const name = btn.dataset.name;
-            const price = parseFloat(btn.dataset.price);
-            const image = btn.dataset.image || '';
-
-            const existing = cart.find(item => item.id === id);
-
-            if (existing) {
-                existing.quantity += 1;
-            } else {
-                cart.push({
-                    id,
-                    name,
-                    price,
-                    image,
-                    quantity: 1
-                });
+            if (!map[cat.id]) {
+                map[cat.id] = {
+                    id: cat.id,
+                    categoryName: cat.categoryName,
+                    products: []
+                };
             }
 
-            saveCart();
-            updateBadge();
-            showToast(`${name} added to cart`);
+            map[cat.id].products.push(p);
         });
 
-        // ------------------------------------------------------------
-        // 4. Toast
-        // ------------------------------------------------------------
-        const showToast = (msg) => {
-            const toast = document.createElement('div');
-            toast.textContent = msg;
-
-            Object.assign(toast.style, {
-                position: 'fixed',
-                bottom: '20px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: '#003366',
-                color: '#fff',
-                padding: '10px 20px',
-                borderRadius: '6px',
-                fontSize: '14px',
-                zIndex: 9999,
-                animation: 'toastFade 2s forwards'
-            });
-
-            document.body.appendChild(toast);
-
-            if (!document.getElementById('toastAnim')) {
-                const style = document.createElement('style');
-                style.id = 'toastAnim';
-                style.textContent = `
-          @keyframes toastFade {
-            0%,100% {opacity:0; transform:translateX(-50%) translateY(10px);}
-            15%,85% {opacity:1; transform:translateX(-50%) translateY(0);}
-          }`;
-                document.head.appendChild(style);
-            }
-
-            setTimeout(() => toast.remove(), 2000);
-        };
+        renderMenu(Object.values(map));
     });
-})();
+
+
+function renderMenu(categories) {
+    const container = document.getElementById("menuContainer");
+    container.innerHTML = "";
+
+    if (!categories || categories.length === 0) {
+        container.innerHTML = "<p>No categories found.</p>";
+        return;
+    }
+
+    categories.forEach(category => {
+        const categoryEl = document.createElement("div");
+
+        categoryEl.innerHTML = `
+            <h1>${category.categoryName}</h1>
+            <div class="pizza">
+                <div class="pizza_menu" id="category-${category.id}"></div>
+            </div>
+        `;
+
+        container.appendChild(categoryEl);
+
+        const productContainer =
+            document.getElementById(`category-${category.id}`);
+
+        if (!category.products || category.products.length === 0) {
+            productContainer.innerHTML =
+                "<p>No products in this category.</p>";
+            return;
+        }
+
+        category.products.forEach(product => {
+            const img = product.image
+                ? `/images/products/${product.image}`
+                : `/images/no-image.png`;
+
+            productContainer.innerHTML += `
+                <div class="menu">
+                    <img src="${img}" width="200">
+                    <div class="info_bar">
+                        <p>
+                            <b>${product.productName}</b><br>
+                            $${product.price}
+                        </p>
+                        <button class="add-to-cart"
+                            data-id="${product.id}"
+                            data-name="${product.productName}"
+                            data-price="${product.price}"
+                            data-image="${product.image || ''}">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+}
