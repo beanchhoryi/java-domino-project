@@ -1,85 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/menu.css}">
-    <script th:src="@{/js/cart.js}" defer></script>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/menu.css">
+
+    <script src="/js/menu.js" defer></script>
+    <script src="/js/cart.js" defer></script>
 </head>
-<body style="margin: 0;">
-<div id="preloader"></div>
+
+<body style="margin:0">
+
 <div class="menu">
     <div class="container_menu">
         <div class="container_menu_left">
             <ul>
-                <a th:href="@{/}"><li><img th:src="@{/image/domino_logo.png}" width="65" height="65"></li></a>
-                <a th:href="@{/}"><li>Home</li></a>
-                <a th:href="@{/menu}"><li>Menu</li></a>
-                <a th:href="@{/cart}"><li>Order</li></a>
-                <a th:href="@{/contacts}"><li>Contact</li></a>
+                <li><img src="/image/domino_logo.png" width="65"></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/menu">Menu</a></li>
+                <li><a href="/cart">Order</a></li>
+                <li><a href="/contacts">Contact</a></li>
             </ul>
         </div>
+
         <div class="container_menu_right">
             <ul>
                 <li><p id="numberItemInCart">0</p></li>
-                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25" height="25"></a></li>
-                <li><a th:href="@{/login}"><img th:src="@{/icon/user.png}" width="23" height="23"></a></li>
+                <li><a href="/cart"><img src="/icon/cart.png" width="25"></a></li>
+                <li><a href="/login"><img src="/icon/user.png" width="23"></a></li>
             </ul>
         </div>
     </div>
 </div>
 
+<!-- FETCH API TARGET -->
 <div class="body_container">
-    <div class="menu_container">
-        <div th:each="category : ${categories}">
-            <h1 th:text="${category.categoryName}">Category Name</h1>
-            <div class="pizza">
-                <div class="pizza_menu">
-                    <div th:each="product : ${category.products}" class="menu">
-                        <img th:if="${product.image}" th:src="@{'/images/products/' + ${product.image}}" th:alt="${product.productName}" width="200">
-                        <img th:unless="${product.image}" th:src="@{/images/no-image.png}" alt="No image" width="200">
-                        <div class="info_bar">
-                            <p><b th:text="${product.productName}">Product Name</b><br>$<span th:text="${product.price}">10.99</span></p>
-                            <button class="add-to-cart"
-                                    th:attr="data-id=${product.id},
-                                             data-name=${product.productName},
-                                             data-price=${product.price}">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                    <p th:if="${#lists.isEmpty(category.products)}">No products in this category.</p>
-                </div>
-            </div>
-        </div>
-        <p th:if="${#lists.isEmpty(categories)}">No categories found.</p>
+    <div class="menu_container" id="menuContainer">
+        <!-- menu.js renders here -->
     </div>
 </div>
 
-<footer style="background-color: #0b648f; margin-top: 50px;">
-    <div class="footer_table">
-        <table>
-            <tr>
-                <td>
-                    <div class="footer_left">
-                        <p>Our Social media:</p>
-                        <ul>
-                            <li><a href="https://www.facebook.com/DominosPizzaCambodia/" target="_blank"><img th:src="@{/icon/facebook.png}"></a></li>
-                            <li><a href="https://www.instagram.com/dominos/?hl=en" target="_blank"><img th:src="@{/icon/instagram.png}"></a></li>
-                            <li><a href="https://www.tiktok.com/@dominos.pizza.cam" target="_blank"><img th:src="@{/icon/tiktok.png}"></a></li>
-                            <li><a href="https://www.youtube.com/@dominos" target="_blank"><img th:src="@{/icon/youtube.png}"></a></li>
-                        </ul>
-                    </div>
-                </td>
-                <td><div class="footer_right"></div></td>
-            </tr>
-        </table>
-    </div>
-    <div class="description">
-        <p><br><br>Any Delivery Charge is not a tip paid to your driver.<br>Please reward your driver for awesomeness. Our drivers carry less than 10$. Minimum purchase required for delivery. Payment is strictly Cash On Delivery.<br><br>Operating hours: 10:00 AM - 10:00 PM. Delivery service from 10:00 AM - 9:30 PM.<br><br>Domino's Pizza Cambodia reserves the right to modify this policy. Major changes will be posted on our homepage.<br><br>Our Guarantee: If you're not satisfied with your Domino's Pizza experience, we'll make it right or refund your money.</p>
-    </div>
-</footer>
+<footer style="background:#0b648f; margin-top:50px"></footer>
+
 </body>
 </html>
