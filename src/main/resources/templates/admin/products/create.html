@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Product - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a th:href="@{/}" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a th:href="@{/logout}" class="nav-link">Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div th:replace="admin/sidebar :: sidebar"></div>
+
+    <!-- Content -->
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Add Product</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
+                            <li class="breadcrumb-item active">Add Product</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Product Information</h3>
+                            </div>
+                            <form id="createProductForm">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="productName">Product Name:</label>
+                                        <input type="text" class="form-control" id="productName" name="productName"
+                                               placeholder="Enter Product Name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="description">Description:</label>
+                                        <textarea class="form-control" id="description" name="description"
+                                                  placeholder="Enter Description" rows="3"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="price">Price:</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input type="number" step="0.01" class="form-control" id="price"
+                                                           name="price" placeholder="Enter Price" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="stockQty">Stock Quantity:</label>
+                                                <input type="number" class="form-control" id="stockQty" name="stockQty"
+                                                       placeholder="Enter Stock Quantity" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="category">Category:</label>
+                                                <select class="form-control" id="category" name="categoryId" required>
+                                                    <option value="">Select Category</option>
+                                                    <!-- Categories will be populated by JavaScript -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="image">Image URL:</label>
+                                                <input type="text" class="form-control" id="image" name="image"
+                                                       placeholder="Enter Image URL">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a th:href="@{/products}" class="btn btn-danger">Back</a>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <strong>Copyright &copy; 2024 Domino Pizza.</strong>
+        All rights reserved.
+    </footer>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+<script>
+    // Fetch categories for dropdown
+    fetch('/api/admin/categories')
+        .then(res => res.json())
+        .then(categories => {
+            const categorySelect = document.getElementById('category');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+        });
+
+    // Handle form submission
+    document.getElementById('createProductForm').addEventListener('submit', function(e){
+        e.preventDefault();
+
+        const formData = Object.fromEntries(new FormData(this));
+        // Convert numeric fields
+        formData.price = parseFloat(formData.price);
+        formData.stockQty = parseInt(formData.stockQty);
+        formData.categoryId = parseInt(formData.categoryId);
+
+        fetch('/api/admin/products', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+        }).then(res => {
+            if(res.ok) window.location.href = '/products';
+        });
+    });
+</script>
+</body>
+</html>
