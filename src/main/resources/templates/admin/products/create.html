@@ -128,14 +128,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 <script>
     // Fetch categories for dropdown
-    fetch('/api/admin/categories')
+    fetch('/admin/category/api')
         .then(res => res.json())
         .then(categories => {
             const categorySelect = document.getElementById('category');
             categories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.id;
-                option.textContent = category.name;
+                option.textContent = category.categoryName;
                 categorySelect.appendChild(option);
             });
         });
