@@ -7,36 +7,83 @@
     <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
-<form th:action="@{/login}" method="post" id="loginForm">
 
-<!--                          unable CSRF                            -->
-<!--    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+<form id="loginForm">
     <img id="domino_logo" th:src="@{/image/domino_logo.png}" alt="Domino Logo">
-    <p>Welcome back to Domino's Pizza! 🍕<br>Sign in to manage your profile and orders.</p>
+
+    <p>
+        Welcome back to Domino's Pizza! 🍕<br>
+        Sign in to manage your profile and orders.
+    </p>
+
     <hr>
     <h3><b>Login</b></h3>
     <hr>
-    <div th:if="${param.error}" class="messages">
-        <p class="error">Invalid username or password.</p>
+
+    <!-- Messages -->
+    <div id="errorBox" class="messages" style="display:none;">
+        <p class="error" id="errorText">Invalid username or password.</p>
     </div>
-    <div th:if="${param.logout}" class="messages">
-        <p class="success">You have been logged out successfully.</p>
-    </div>
-    <div th:if="${message != null and #strings.length(message) > 0}" class="messages">
-        <p th:text="${message}" class="info"></p>
-    </div>
+
     <div class="row">
-        <input type="text" name="username" id="username" placeholder="Username or Email *" required>
+        <input type="text" name="usernameOrEmail" id="usernameOrEmail" placeholder="Username or Email *" required>
     </div>
+
     <div class="row">
         <input type="password" name="password" id="password" placeholder="Password *" required>
     </div>
+
     <br>
     <hr>
     <br>
+
     <input type="submit" value="Login" id="buttonLogin">
     <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
 </form>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const usernameOrEmail = document.getElementById("usernameOrEmail").value.trim();
+        const password = document.getElementById("password").value;
+
+        const errorBox = document.getElementById("errorBox");
+        const errorText = document.getElementById("errorText");
+        errorBox.style.display = "none";
+        errorText.textContent = "";
+
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ usernameOrEmail, password })
+            });
+
+            if (!res.ok) {
+                // If your backend returns a message, you can read it here:
+                // const txt = await res.text();
+                errorText.textContent = "Invalid username/email or password.";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            const data = await res.json();
+
+            // Save JWT for later API calls
+            localStorage.setItem("token", data.token);
+
+            // Redirect to home page
+            window.location.href = "/";
+        } catch (err) {
+            errorText.textContent = "Server error. Please try again.";
+            errorBox.style.display = "block";
+        }
+    });
+</script>
+
+<!-- Optional: keep if you still want client-side validation -->
 <script th:src="@{/js/login_validation.js}"></script>
+
 </body>
 </html>
