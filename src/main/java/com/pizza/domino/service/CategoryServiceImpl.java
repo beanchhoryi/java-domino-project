@@ -28,6 +28,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category save(Category category) {
+        // Check if category with same name already exists
+        if (category.getId() == null) { // New category
+            List<Category> allCategories = categoryRepository.findAll();
+            for (Category existing : allCategories) {
+                if (existing.getCategoryName().equalsIgnoreCase(category.getCategoryName())) {
+                    // Update existing instead of creating duplicate
+                    existing.setDescription(category.getDescription());
+                    return categoryRepository.save(existing);
+                }
+            }
+        }
+
         return categoryRepository.save(category);
     }
 

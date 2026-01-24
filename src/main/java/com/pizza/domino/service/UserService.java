@@ -16,31 +16,25 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAll() {
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public User getById(Long id) {
+    public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User create(User user) {
-        user.setCreatedAt(LocalDateTime.now());
-        return userRepository.save(user);
-    }
+    public User updateRole(Long id, String role) {
 
-    public User update(Long id, User user) {
-        User existing = getById(id);
-        existing.setUsername(user.getUsername());
-        existing.setFirstName(user.getFirstName());
-        existing.setLastName(user.getLastName());
-        existing.setEmail(user.getEmail());
-        existing.setPhone(user.getPhone());
-        existing.setAddress(user.getAddress());
-        existing.setRole(user.getRole());
-        existing.setImage(user.getImage());
-        return userRepository.save(existing);
+        if (!role.equals("ROLE_ADMIN") &&
+                !role.equals("ROLE_USER")) {
+            throw new IllegalArgumentException("Invalid role");
+        }
+
+        User user = findById(id);
+        user.setRole(role);
+        return userRepository.save(user);
     }
 
     public void delete(Long id) {

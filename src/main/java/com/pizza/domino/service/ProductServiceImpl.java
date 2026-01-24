@@ -8,10 +8,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl extends ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    public ProductServiceImpl(ProductRepository productRepository) {
+        super(productRepository);
+    }
 
     @Override
     public List<Product> getAll() {

@@ -1,31 +1,54 @@
 package com.pizza.domino.service;
 
 import com.pizza.domino.model.Product;
+import com.pizza.domino.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-public interface ProductService {
+@Service
+@RequiredArgsConstructor
+public abstract class ProductService {
 
-    // ✅ ADD THESE METHODS
+    private final ProductRepository productRepository;
 
-    // Get all products
-    List<Product> getAll();
+    // ===== STANDARD CRUD (FOR REST API) =====
 
-    // Get product by ID
-    Product getById(Long id);
+    public List<Product> findAll() {
+        return productRepository.findAll();
+    }
 
-    // Create new product
-    Product create(Product product);
+    public Product findById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
 
-    // Update existing product
-    Product update(Long id, Product product);
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
 
-    // Delete product
-    void delete(Long id);
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
+    }
 
-    // ✅ ADD THIS MISSING METHOD
-    long count();
+    public abstract List<Product> getAll();
 
-    // Optional: Other methods you might need
-    List<Product> findByCategoryId(Long categoryId);
-    List<Product> searchByName(String keyword);
+    public abstract Product getById(Long id);
+
+    public abstract Product create(Product product);
+
+    public abstract Product update(Long id, Product product);
+
+    public abstract void delete(Long id);
+
+    public abstract long count();
+
+    // Optional additional methods
+    public abstract List<Product> findByCategoryId(Long categoryId);
+
+    public abstract List<Product> searchByName(String keyword);
+
+    // ===== KEEP OLD METHODS (DO NOT REMOVE) =====
+    // If your teammates are using them elsewhere
 }

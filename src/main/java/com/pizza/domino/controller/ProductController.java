@@ -2,69 +2,59 @@ package com.pizza.domino.controller;
 
 import com.pizza.domino.model.Product;
 import com.pizza.domino.service.ProductService;
-import com.pizza.domino.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/products") // Changed from /api/admin/products
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping("/admin/products")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
-    private final CategoryService categoryService;
 
-    @Autowired
-    public ProductController(ProductService productService, CategoryService categoryService) {
-        this.productService = productService;
-        this.categoryService = categoryService;
-    }
-
-    // LIST PAGE
+    // GET ALL
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("products", productService.getAll());
-        model.addAttribute("countItem", productService.count());
-        return "admin/products/index";
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(productService.findAll());
     }
 
-    // CREATE PAGE
-    @GetMapping("/create")
-    public String createForm(Model model) {
-        model.addAttribute("product", new Product());
-        model.addAttribute("categories", categoryService.findAll());
-        return "admin/products/create";
+    // GET BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.findById(id));
     }
 
-    // SAVE
-    @PostMapping("/save")
-    public String save(@ModelAttribute Product product) {
-        productService.create(product);
-        return "redirect:/admin/products";
-    }
-
-    // EDIT PAGE
-    @GetMapping("/edit/{id}")
-    public String edit(@PathVariable Long id, Model model) {
-        model.addAttribute("product", productService.getById(id));
-        model.addAttribute("categories", categoryService.findAll());
-        return "admin/products/update";
+    // CREATE
+    @PostMapping
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        return ResponseEntity.ok(productService.save(product));
     }
 
     // UPDATE
-    @PostMapping("/update/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute Product product) {
-        productService.update(id, product);
-        return "redirect:/admin/products";
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long id,
+            @RequestBody Product product) {
+
+        Product old = productService.findById(id);
+        old.setProductName(product.getProductName());
+        old.setPrice(product.getPrice());
+        old.setCategory(product.getCategory());
+        old.setDescription(product.getDescription());
+        old.setImageUrl(product.getImageUrl());
+
+        return ResponseEntity.ok(productService.save(old));
     }
 
     // DELETE
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        productService.delete(id);
-        return "redirect:/admin/products";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

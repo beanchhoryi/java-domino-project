@@ -27,6 +27,15 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    public String getName() {
+        return this.productName;
+    }
+
+    public String getImage() {
+        return this.imageUrl;
+    }
+
+
     // Constructors
     public Product() {}
 
