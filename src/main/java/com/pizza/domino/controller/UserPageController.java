@@ -9,11 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/users")
 public class UserPageController {
 
-    @GetMapping("/users")
-    public String usersPage() {
-        return "admin/users/dashboard";
-    }
-
     @GetMapping
     public String index() {
         return "admin/users/index"; // this points to src/main/resources/templates/users/index.html
