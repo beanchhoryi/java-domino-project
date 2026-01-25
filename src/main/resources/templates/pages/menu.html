@@ -29,7 +29,7 @@
             <ul>
                 <li><p id="numberItemInCart">0</p></li>
                 <li><a href="/cart"><img src="/icon/cart.png" width="25"></a></li>
-                <li><a href="/login"><img src="/icon/user.png" width="23"></a></li>
+                <li><a id="accountLink" href="#"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
             </ul>
         </div>
     </div>
@@ -43,6 +43,6 @@
 </div>
 
 <footer style="background:#0b648f; margin-top:50px"></footer>
-
+<script th:src="@{/js/auth.js}" defer></script>
 </body>
 </html>

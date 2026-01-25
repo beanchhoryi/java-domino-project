@@ -1,4 +1,3 @@
-// js/account_validation.js
 document.getElementById('registrationForm').addEventListener('submit', function(e) {
     const password = document.getElementById('txtPassword').value;
     const confirm = document.getElementById('txtConfirm').value;
@@ -16,7 +15,4 @@ document.getElementById('registrationForm').addEventListener('submit', function(
         e.preventDefault();
         return;
     }
-
-    // If all good → let form submit normally
-    // Do NOT call e.preventDefault() here
 });

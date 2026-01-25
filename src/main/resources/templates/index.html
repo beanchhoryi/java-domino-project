@@ -24,7 +24,7 @@
             <ul>
                 <li><p id="numberItemInCart">0</p></li>
                 <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25px" height="25px"></a></li>
-                <li><a th:href="@{/login}"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
+                <li><a id="accountLink" href="#"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
             </ul>
         </div>
     </div>
@@ -95,5 +95,6 @@
         </p>
     </div>
 </footer>
+<script th:src="@{/js/auth.js}" defer></script>
 </body>
 </html>
