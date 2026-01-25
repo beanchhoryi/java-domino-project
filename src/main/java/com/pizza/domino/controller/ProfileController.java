@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ProfileController {
 
-    @GetMapping("/profile/settings")
+    @GetMapping("/profile")
     public String profileSettings() {
         return "pages/profile_settings";
     }
