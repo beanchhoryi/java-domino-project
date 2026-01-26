@@ -20,9 +20,6 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    // ===================== MVC PAGES =====================
-
-    // LIST PAGE
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String categoryList(Model model) {
@@ -32,7 +29,6 @@ public class CategoryController {
         return "admin/category/index";
     }
 
-    // CREATE PAGE
     @GetMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     public String createCategory(Model model) {
@@ -40,13 +36,11 @@ public class CategoryController {
         return "admin/category/create";
     }
 
-    // SAVE - FIXED REDIRECT
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public String saveCategory(@ModelAttribute Category category,
                                RedirectAttributes redirectAttributes) {
 
-        // Simple validation - check if category name is not empty
         if (category.getCategoryName() == null || category.getCategoryName().trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Category name is required!");
             return "redirect:/category/create";
@@ -64,7 +58,6 @@ public class CategoryController {
         return "redirect:/category";
     }
 
-    // EDIT PAGE
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String editCategory(@PathVariable Long id, Model model) {
@@ -73,7 +66,6 @@ public class CategoryController {
         return "admin/category/update";
     }
 
-    // UPDATE - FIXED REDIRECT
     @PostMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String updateCategory(@PathVariable Long id,
@@ -85,7 +77,6 @@ public class CategoryController {
         return "redirect:/category";  // ← CHANGED from /admin/category to /category
     }
 
-    // DELETE - FIXED REDIRECT
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteCategory(@PathVariable Long id) {
@@ -95,7 +86,6 @@ public class CategoryController {
 
     // ===================== REST API =====================
 
-    // GET ALL CATEGORIES - public API
     @GetMapping("/api")
     @ResponseBody
     public List<Category> getAllCategoriesApi() {
