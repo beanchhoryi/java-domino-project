@@ -1,9 +1,8 @@
 package com.pizza.domino.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/users")
@@ -11,16 +10,17 @@ public class UserPageController {
 
     @GetMapping
     public String index() {
-        return "admin/users/index"; // this points to src/main/resources/templates/users/index.html
+        return "admin/users/index";
     }
 
     @GetMapping("/create")
     public String create() {
-        return "admin/users/create"; // src/main/resources/templates/users/create.html
+        return "admin/users/create";
     }
 
     @GetMapping("/update/{id}")
-    public String update(@PathVariable Long id) {
+    public String update(@PathVariable Long id, Model model) {
+        model.addAttribute("userId", id);
         return "admin/users/update";
     }
 }

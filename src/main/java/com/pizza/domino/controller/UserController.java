@@ -2,7 +2,9 @@ package com.pizza.domino.controller;
 
 import com.pizza.domino.model.User;
 import com.pizza.domino.service.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,24 +19,62 @@ public class UserController {
         this.userService = userService;
     }
 
+    // GET ALL USERS
     @GetMapping
     public List<User> getAll() {
         return userService.getAll();
     }
 
+    // GET USER BY ID
     @GetMapping("/{id}")
     public User getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 
-    @PostMapping
-    public User create(@RequestBody User user) {
-        return userService.create(user);
+    // CREATE USER
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public User create(
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String gender,
+            @RequestParam String role,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) MultipartFile image
+    ) {
+        try {
+            return userService.create(firstName, lastName, username, email, password,
+                    phone, gender, role, address, image);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Create failed: " + e.getMessage());
+        }
     }
 
-    @PutMapping("/{id}")
-    public User update(@PathVariable Long id, @RequestBody User user) {
-        return userService.update(id, user);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public User update(
+            @PathVariable Long id,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam(required = false) String password,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String gender,
+            @RequestParam String role,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) MultipartFile image
+    ) {
+        try {
+            return userService.update(id, firstName, lastName, username, email,
+                    password, phone, gender, role, address, image);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Update failed: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

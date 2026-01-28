@@ -7,7 +7,6 @@
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -22,10 +21,8 @@
         </ul>
     </nav>
 
-    <!-- ===== SIDEBAR ===== -->
     <div th:replace="admin/sidebar :: sidebar"></div>
 
-    <!-- Content -->
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -52,8 +49,9 @@
                             <div class="card-header">
                                 <h3 class="card-title">Update User Information</h3>
                             </div>
-                            <form id="updateUserForm">
+                            <form id="updateUserForm" enctype="multipart/form-data">
                                 <div class="card-body">
+                                    <!-- User Fields -->
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -68,6 +66,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -82,6 +81,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -97,6 +97,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -120,17 +121,24 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="form-group">
                                         <label for="address">Address:</label>
                                         <textarea class="form-control" id="address" name="address" rows="2"></textarea>
                                     </div>
+
+                                    <!-- Image Preview -->
                                     <div class="form-group">
-                                        <label for="image">Image URL:</label>
-                                        <input type="text" class="form-control" id="image" name="image">
+                                        <label>Current / Upload Image:</label>
+                                        <br>
+                                        <img id="previewImage" src="/img/default-user.png" width="120" class="mb-2 rounded">
+                                        <input type="file" class="form-control" name="image" accept="image/*"
+                                               onchange="previewFile(this)">
                                     </div>
                                 </div>
+
                                 <div class="card-footer">
-                                    <a th:href="@{/users}" class="btn btn-danger">Back</a>
+                                    <a href="/users" class="btn btn-danger">Back</a>
                                     <button type="submit" class="btn btn-success">Update</button>
                                 </div>
                             </form>
@@ -141,22 +149,17 @@
         </section>
     </div>
 
-    <!-- Footer -->
     <footer class="main-footer">
         <strong>Copyright &copy; 2024 Domino Pizza.</strong>
         All rights reserved.
     </footer>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 <script>
-    // Get userId from URL path
     const pathArray = window.location.pathname.split('/');
     const userId = pathArray[pathArray.length - 1];
-
-    // Fetch user data and populate form
     fetch(`/api/admin/users/${userId}`)
         .then(res => res.json())
         .then(u => {
@@ -169,25 +172,36 @@
             form.gender.value = u.gender || '';
             form.role.value = u.role || 'USER';
             form.address.value = u.address || '';
-            form.image.value = u.image || '';
+            document.getElementById('previewImage').src =
+                u.image || '/img/default-user.png';
         });
 
-    // Handle form submission
+    function previewFile(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('previewImage').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
     document.getElementById('updateUserForm').addEventListener('submit', function(e){
         e.preventDefault();
-        const formData = Object.fromEntries(new FormData(this));
 
-        // If password is empty, remove it from the form data
-        if (!formData.password) {
-            delete formData.password;
-        }
-
+        const formData = new FormData(this);
         fetch(`/api/admin/users/${userId}`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(formData)
+            body: formData
         }).then(res => {
-            if(res.ok) window.location.href = '/users';
+            if(res.ok) {
+                alert('User updated successfully!');
+                window.location.href = '/users';
+            } else {
+                alert('Update failed!');
+            }
+        }).catch(err => {
+            console.error(err);
+            alert('Update error!');
         });
     });
 </script>

@@ -22,10 +22,8 @@
         </ul>
     </nav>
 
-    <!-- ===== SIDEBAR ===== -->
     <div th:replace="admin/sidebar :: sidebar"></div>
 
-    <!-- Content -->
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -59,6 +57,7 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Photo</th>
                                 <th>Username</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
@@ -69,7 +68,6 @@
                             </tr>
                             </thead>
                             <tbody id="userTableBody">
-                            <!-- Users will be populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -89,7 +87,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 <script>
-    // Fetch and display users
     fetch('/api/admin/users')
         .then(res => res.json())
         .then(users => {
@@ -98,6 +95,9 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${u.id}</td>
+                    <td>
+                        <img src="${u.image}?t=${Date.now()}" width="40" height="40" style="border-radius:50%; object-fit:cover;">
+                    </td>
                     <td>${u.username}</td>
                     <td>${u.firstName}</td>
                     <td>${u.lastName}</td>
@@ -110,6 +110,7 @@
                     </td>
                 `;
                 tbody.appendChild(tr);
+                console.log(u.image);
             });
         });
 
