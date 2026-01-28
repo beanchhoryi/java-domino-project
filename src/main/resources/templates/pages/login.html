@@ -10,33 +10,25 @@
 
 <form id="loginForm">
     <img id="domino_logo" th:src="@{/image/domino_logo.png}" alt="Domino Logo">
-
     <p>
         Welcome back to Domino's Pizza! 🍕<br>
         Sign in to manage your profile and orders.
     </p>
-
     <hr>
     <h3><b>Login</b></h3>
     <hr>
-
-    <!-- Messages -->
     <div id="errorBox" class="messages" style="display:none;">
         <p class="error" id="errorText">Invalid username or password.</p>
     </div>
-
     <div class="row">
         <input type="text" name="usernameOrEmail" id="usernameOrEmail" placeholder="Username or Email *" required>
     </div>
-
     <div class="row">
         <input type="password" name="password" id="password" placeholder="Password *" required>
     </div>
-
     <br>
     <hr>
     <br>
-
     <input type="submit" value="Login" id="buttonLogin">
     <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
 </form>
@@ -44,46 +36,52 @@
 <script>
     document.getElementById("loginForm").addEventListener("submit", async function (e) {
         e.preventDefault();
-
         const usernameOrEmail = document.getElementById("usernameOrEmail").value.trim();
         const password = document.getElementById("password").value;
-
         const errorBox = document.getElementById("errorBox");
         const errorText = document.getElementById("errorText");
         errorBox.style.display = "none";
         errorText.textContent = "";
-
+        console.log("Attempting login with:", { usernameOrEmail });
         try {
             const res = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ usernameOrEmail, password })
             });
-
+            console.log("Login response status:", res.status);
             if (!res.ok) {
-                // If your backend returns a message, you can read it here:
-                // const txt = await res.text();
-                errorText.textContent = "Invalid username/email or password.";
+                let errorMsg = "Invalid username/email or password.";
+                try {
+                    const errorData = await res.text();
+                    console.log("Login error response:", errorData);
+                    errorMsg = errorData || errorMsg;
+                } catch (err) {
+                    console.log("Could not parse error response");
+                }
+                errorText.textContent = errorMsg;
                 errorBox.style.display = "block";
                 return;
             }
-
             const data = await res.json();
-
-            // Save JWT for later API calls
+            console.log("Login successful, token received:", data.token ? "YES" : "NO");
+            console.log("User data:", data);
             localStorage.setItem("token", data.token);
+            document.cookie = `token=${data.token}; path=/; max-age=86400`;
+            if (typeof updateNavigation === 'function') {
+                updateNavigation();
+            }
+            setTimeout(() => window.location.href = "/", 500);
 
-            // Redirect to home page
+            console.log("Token saved, redirecting to home...");
             window.location.href = "/";
         } catch (err) {
+            console.error("Login fetch error:", err);
             errorText.textContent = "Server error. Please try again.";
             errorBox.style.display = "block";
         }
     });
 </script>
-
-<!-- Optional: keep if you still want client-side validation -->
-<script th:src="@{/js/login_validation.js}"></script>
-
+<script th:src="@{/js/account_validation.js}"></script>
 </body>
 </html>

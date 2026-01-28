@@ -14,60 +14,45 @@
         <hr>
         <h3><b>Registration</b></h3>
         <hr>
-
-        <!-- JS messages -->
         <div id="errorBox" class="alert error" style="display:none;"></div>
         <div id="successBox" class="alert success" style="display:none;"></div>
-
         <br>
-
         <div class="row">
             <input type="text" id="txtUsername" placeholder="Username *" required>
         </div>
-
         <div class="row">
             <input type="email" id="txtEmail" placeholder="Email *" required>
         </div>
-
         <div class="row" style="display:flex; gap:10px;">
             <input type="text" id="txtFirstName" placeholder="First Name *" required style="flex:1;">
             <input type="text" id="txtLastName" placeholder="Last Name" style="flex:1;">
         </div>
-
         <div class="row">
             <input type="tel" id="txtPhoneNum" placeholder="Phone Number *" required>
         </div>
-
         <div class="row">
             <input type="text" id="txtAddress" placeholder="Address">
         </div>
-
         <div class="row" style="display: flex; gap: 20px;">
             <label><input type="radio" name="gender" value="Male" checked> Male</label>
             <label><input type="radio" name="gender" value="Female"> Female</label>
             <label><input type="radio" name="gender" value="Other"> Not given</label>
         </div>
-
         <div class="row">
             <input type="password" id="txtPassword" placeholder="Password *" required>
         </div>
-
         <div class="row">
             <input type="password" id="txtConfirm" placeholder="Confirm your password *" required>
         </div>
-
         <br>
         <hr>
         <br>
-
         <input type="submit" value="SignUp" id="buttonSubmit" class="submit-btn">
-
         <p style="margin-top:10px;">
             Already have an account? <a th:href="@{/login}">Login here</a>
         </p>
     </form>
 </div>
-
 <script>
     function showError(msg) {
         const e = document.getElementById("errorBox");
@@ -76,7 +61,6 @@
         e.textContent = msg;
         e.style.display = "block";
     }
-
     function showSuccess(msg) {
         const e = document.getElementById("errorBox");
         const s = document.getElementById("successBox");
@@ -84,10 +68,8 @@
         s.textContent = msg;
         s.style.display = "block";
     }
-
     document.getElementById("registrationForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const username = document.getElementById("txtUsername").value.trim();
         const email = document.getElementById("txtEmail").value.trim();
         const firstName = document.getElementById("txtFirstName").value.trim();
@@ -129,9 +111,12 @@
             }
 
             const data = await res.json();
-
-            // store JWT and go home
             localStorage.setItem("token", data.token);
+            document.cookie = `token=${data.token}; path=/; max-age=86400`;
+            if (typeof updateNavigation === 'function') {
+                updateNavigation();
+            }
+            setTimeout(() => window.location.href = "/", 500);
             showSuccess("Registration successful! Redirecting...");
             setTimeout(() => window.location.href = "/", 500);
 
@@ -140,8 +125,6 @@
         }
     });
 </script>
-
-<!-- Optional: remove this if it submits to /register -->
 <script th:src="@{/js/account_validation.js}"></script>
 </body>
 </html>

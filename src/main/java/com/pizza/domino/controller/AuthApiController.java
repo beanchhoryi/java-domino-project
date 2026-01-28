@@ -55,6 +55,9 @@ public class AuthApiController {
         u.setEmail(req.email());
         u.setFirstName(req.firstName());
         u.setLastName(req.lastName());
+        u.setGender(req.gender());
+        u.setPhone(req.phone());
+        u.setAddress(req.address());
         u.setRole("USER");
         u.setCreatedAt(LocalDateTime.now());
         u.setPassword(passwordEncoder.encode(req.password()));
@@ -69,12 +72,9 @@ public class AuthApiController {
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest req) {
-        // authenticate with username OR email (our UserDetailsService supports both)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.usernameOrEmail(), req.password())
         );
-
-        // after authenticate, mint token for the real username
         UserDetails ud = userDetailsService.loadUserByUsername(req.usernameOrEmail());
         String token = jwtService.generateToken(ud);
 
