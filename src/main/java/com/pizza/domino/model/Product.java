@@ -35,8 +35,6 @@ public class Product {
         return this.imageUrl;
     }
 
-
-    // Constructors
     public Product() {}
 
     public Product(String productName, String description, BigDecimal price,
@@ -49,7 +47,6 @@ public class Product {
         this.category = category;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -71,7 +68,6 @@ public class Product {
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
 
-    // Helper method
     public boolean isInStock() {
         return stockQty != null && stockQty > 0;
     }

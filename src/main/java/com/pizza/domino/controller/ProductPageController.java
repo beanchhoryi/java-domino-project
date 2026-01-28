@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +24,6 @@ public class ProductPageController {
         this.categoryService = categoryService;
     }
 
-    // ===== PRODUCT PAGES =====
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String productsPage(Model model) {
@@ -50,37 +50,37 @@ public class ProductPageController {
         return "admin/products/update";
     }
 
-    // ===== PRODUCT ACTIONS =====
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public String saveProduct(@ModelAttribute Product product) {
-        // The BigDecimal binding should work automatically with Spring
-        productService.save(product);
+    public String saveProduct(
+            @ModelAttribute Product product,
+            @RequestParam("image") MultipartFile image
+    ) throws Exception {
+
+        productService.create(product, image);
         return "redirect:/products";
     }
 
     @PostMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product) {
-        Product old = productService.findById(id);
-        old.setProductName(product.getProductName());
-        old.setDescription(product.getDescription());
-        old.setPrice(product.getPrice());  // BigDecimal
-        old.setStockQty(product.getStockQty());
-        old.setImageUrl(product.getImageUrl());
-        old.setCategory(product.getCategory());
-        productService.save(old);
+    public String updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute Product product,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) throws Exception {
+
+        productService.update(id, product, image);
         return "redirect:/products";
     }
+
 
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteProduct(@PathVariable Long id) {
-        productService.deleteById(id);
+        productService.delete(id);
         return "redirect:/products";
     }
 
-    // ===== API ENDPOINTS =====
     @GetMapping("/api")
     @ResponseBody
     public List<Product> getAllProductsApi() {

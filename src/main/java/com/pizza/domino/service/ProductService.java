@@ -1,54 +1,22 @@
 package com.pizza.domino.service;
 
 import com.pizza.domino.model.Product;
-import com.pizza.domino.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public abstract class ProductService {
+public interface ProductService {
 
-    private final ProductRepository productRepository;
+    List<Product> findAll();
 
-    // ===== STANDARD CRUD (FOR REST API) =====
+    Product findById(Long id);
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
-    }
+    Product create(Product product, MultipartFile image) throws Exception;
 
-    public Product findById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-    }
+    Product update(Long id, Product product, MultipartFile image) throws Exception;
 
-    public Product save(Product product) {
-        return productRepository.save(product);
-    }
+    void delete(Long id);
 
-    public void deleteById(Long id) {
-        productRepository.deleteById(id);
-    }
+    long count();
 
-    public abstract List<Product> getAll();
-
-    public abstract Product getById(Long id);
-
-    public abstract Product create(Product product);
-
-    public abstract Product update(Long id, Product product);
-
-    public abstract void delete(Long id);
-
-    public abstract long count();
-
-    // Optional additional methods
-    public abstract List<Product> findByCategoryId(Long categoryId);
-
-    public abstract List<Product> searchByName(String keyword);
-
-    // ===== KEEP OLD METHODS (DO NOT REMOVE) =====
-    // If your teammates are using them elsewhere
 }
+

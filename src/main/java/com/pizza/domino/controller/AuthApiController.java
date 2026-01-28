@@ -55,11 +55,8 @@ public class AuthApiController {
         u.setEmail(req.email());
         u.setFirstName(req.firstName());
         u.setLastName(req.lastName());
-        String genderInput = req.gender();
-        if (genderInput == null || genderInput.isBlank()) {
-            genderInput = "Other";
-        }
-        u.setGender(genderInput);
+        String gender = req.gender();
+        u.setGender((gender == null || gender.isBlank()) ? "Other" : gender);
         u.setPhone(req.phone());
         u.setAddress(req.address());
         u.setRole("USER");

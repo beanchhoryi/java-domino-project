@@ -19,19 +19,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    // GET ALL USERS
     @GetMapping
     public List<User> getAll() {
         return userService.getAll();
     }
 
-    // GET USER BY ID
     @GetMapping("/{id}")
     public User getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 
-    // CREATE USER
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public User create(
             @RequestParam String firstName,
