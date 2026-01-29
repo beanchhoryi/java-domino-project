@@ -99,9 +99,10 @@ function renderProducts(products, container, categoryName) {
 
         div.innerHTML = `
             <img src="${imgPath}" 
-                 width="400"
-                 alt="${product.productName}"
-                 onerror="this.src='/image/no-image.png'">
+             width="400"
+             alt="${product.productName}"
+             style="object-fit: cover; height: 250px;"
+             onerror="this.src='/image/no-image.png'">
 
             <div class="info_bar">
                 <p>

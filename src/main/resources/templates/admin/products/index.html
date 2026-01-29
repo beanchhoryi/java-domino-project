@@ -91,7 +91,7 @@
 
                                     <tr th:each="product : ${products}">
                                         <td th:text="${product.id}">1</td>
-                                        <td><img th:src="${product.imageUrl != null ? product.imageUrl : '/img/default-product.png'}" width="50"></td>
+                                        <td><img th:src="${product.imageUrl != null ? product.imageUrl : '/img/default-product.png'}" width="80" height="50" style="object-fit: cover"></td>
                                         <td th:text="${product.productName}">Margherita Pizza</td>
                                         <td th:text="'$' + ${product.price != null ? product.price.toString() : '0.00'}">$12.99</td>
                                         <td>
