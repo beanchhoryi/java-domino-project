@@ -28,9 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
         String path = request.getRequestURI();
-
         if (path.startsWith("/uploads/")
                 || path.startsWith("/img/")
                 || path.startsWith("/image/")
@@ -44,11 +42,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-
         System.out.println("=== JWT Filter for: " + path + " ===");
-
         String token = null;
-
         token = request.getParameter("token");
 
         if (token == null) {
@@ -66,29 +61,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             String username = jwtService.extractUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
             if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
-
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         } catch (Exception ignored) {}
-
         filterChain.doFilter(request, response);
     }
-
 }

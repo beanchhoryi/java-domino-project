@@ -1,4 +1,3 @@
-// Show green check when field is filled
 document.querySelectorAll('.profile-form input, .profile-form select').forEach(el => {
     const updateCheck = () => {
         const group = el.closest('.form-group');
@@ -10,10 +9,9 @@ document.querySelectorAll('.profile-form input, .profile-form select').forEach(e
     };
     el.addEventListener('input', updateCheck);
     el.addEventListener('blur', updateCheck);
-    updateCheck(); // initial state
+    updateCheck();
 });
 
-// Avatar preview
 document.getElementById('id_image')?.addEventListener('change', e => {
     const file = e.target.files[0];
     if (file) {
@@ -23,7 +21,6 @@ document.getElementById('id_image')?.addEventListener('change', e => {
     }
 });
 
-// NEW: Form readonly/edit mode functionality
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.profile-form');
     const inputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
@@ -34,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('id_image');
     const logoutWrapper = document.querySelector('.logout-wrapper');
 
-    // Function to disable form (readonly mode)
     function disableForm() {
         inputs.forEach(input => {
             input.setAttribute('readonly', true);
@@ -49,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (logoutWrapper) logoutWrapper.style.display = 'none';
     }
 
-    // Function to enable form (edit mode)
     function enableForm() {
         inputs.forEach(input => {
             input.removeAttribute('readonly');
@@ -64,44 +59,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if (logoutWrapper) logoutWrapper.style.display = 'block';
     }
 
-    // Check URL parameter for edit mode
     const urlParams = new URLSearchParams(window.location.search);
     const isEditMode = urlParams.get('edit') === 'true';
 
-    // Set initial state
     if (!isEditMode) {
         disableForm();
     }
 
-    // Enable form when Edit Profile is clicked
     if (editProfileBtn) {
         editProfileBtn.addEventListener('click', function(e) {
             e.preventDefault();
             enableForm();
-
-            // Update URL to include edit parameter
             const newUrl = new URL(window.location.href);
             newUrl.searchParams.set('edit', 'true');
             window.history.pushState({}, '', newUrl);
-
-            // Scroll to form smoothly
             form.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     }
 
-    // Handle cancel button to go back to readonly mode
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function(e) {
             e.preventDefault();
             disableForm();
 
-            // Remove edit parameter from URL
             const newUrl = new URL(window.location.href);
             newUrl.searchParams.delete('edit');
             window.history.pushState({}, '', newUrl);
-
-            // Optionally reload to reset form values
-            // window.location.reload();
         });
     }
 });

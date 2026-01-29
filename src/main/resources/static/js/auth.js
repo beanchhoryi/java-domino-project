@@ -31,6 +31,37 @@ function updateNavigation() {
     }
 }
 
+function getUserRole() {
+    const token = getToken();
+    if (!token) return null;
+
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.role;
+    } catch (e) {
+        return null;
+    }
+}
+
+function updateRoleLinks() {
+    const role = getUserRole();
+
+    const dashboardLinks = document.querySelectorAll('a[href="/dashboard"]');
+    if (dashboardLinks.length) {
+        if (role !== 'ROLE_ADMIN') {
+            dashboardLinks.forEach(el => el.style.display = 'none');
+        }
+    }
+
+    const profileLinks = document.querySelectorAll('a[href="/profile"]');
+    if (profileLinks.length && !role) {
+        profileLinks.forEach(el => el.style.display = 'none');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateRoleLinks);
+
+
 document.addEventListener('DOMContentLoaded', function () {
     updateNavigation();
     checkAuth();
@@ -60,3 +91,19 @@ document.addEventListener('click', function (e) {
         window.location.href = isLoggedIn() ? '/profile' : '/login';
     }
 });
+
+function checkPageAccess() {
+    const role = getUserRole();
+    const path = window.location.pathname;
+
+    if (path === '/dashboard' && role !== 'ROLE_ADMIN') {
+        alert('Access denied: Admin only');
+        window.location.href = '/';
+    }
+
+    if (path === '/profile' && !role) {
+        alert('Access denied: Login required');
+        window.location.href = '/login';
+    }
+}
+document.addEventListener('DOMContentLoaded', checkPageAccess);

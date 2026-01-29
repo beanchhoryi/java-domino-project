@@ -363,10 +363,7 @@
                 <h1 class="profile-title">Account Information</h1>
 
                 <div class="avatar-wrapper">
-                    <img id="preview" class="avatar"
-                         th:src="${user.image != null && !#strings.isEmpty(user.image)} ?
-                 @{'/images/profiles/' + ${user.image}} :
-                 @{/image/user.png}">
+                    <img id="preview" class="avatar" th:src="@{|/${user.image}|}" alt="User Avatar">
                 </div>
             </header>
 
@@ -401,10 +398,7 @@
                 <h1 class="profile-title">Edit Profile</h1>
 
                 <div class="avatar-wrapper">
-                    <img id="preview" class="avatar"
-                         th:src="${user.image != null && !#strings.isEmpty(user.image)} ?
-                 @{'/images/profiles/' + ${user.image}} :
-                 @{/image/user.png}">
+                    <img id="preview-edit" class="avatar" alt="User Avatar" th:src="@{|/${user.image}|}">
                     <input type="file" name="image" id="id_image" accept="image/*">
                     <label for="id_image" class="avatar-label">Change</label>
                 </div>
