@@ -24,6 +24,8 @@ public class ProductPageController {
         this.categoryService = categoryService;
     }
 
+
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String productsPage(Model model) {
@@ -79,6 +81,12 @@ public class ProductPageController {
     public String deleteProduct(@PathVariable Long id) {
         productService.delete(id);
         return "redirect:/products";
+    }
+
+    @GetMapping("/api/public")  // ← ADDED: Public API endpoint
+    @ResponseBody
+    public List<Product> getPublicProductsApi() {
+        return productService.findPublicProducts();
     }
 
     @GetMapping("/api")

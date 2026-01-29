@@ -1,24 +1,40 @@
-// menu.js - FIXED image paths
+// menu.js - UPDATED: Everyone can access menu
 document.addEventListener("DOMContentLoaded", () => {
     loadMenu();
     updateCartCount();
 });
 
 // ------------------------------------
-// Load products from API
+// Load products from API - UPDATED: No role check needed
 // ------------------------------------
 async function loadMenu() {
     const container = document.getElementById("menuContainer");
 
     try {
-        const response = await fetch("/api/products");
-        if (!response.ok) throw new Error("API error");
+        // Try to get token for authentication
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        // Add authorization header if token exists
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch("/api/products/public", {
+            headers: headers
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to load menu");
+        }
 
         const products = await response.json();
         console.log("Products:", products);
 
         if (!products || products.length === 0) {
-            container.innerHTML = "<p>No products found</p>";
+            container.innerHTML = "<p>No products available at the moment.</p>";
             return;
         }
 
@@ -34,12 +50,12 @@ async function loadMenu() {
 
     } catch (err) {
         console.error("Menu load failed:", err);
-        container.innerHTML = "<p style='color:red'>Failed to load menu</p>";
+        container.innerHTML = "<p style='color:red'>Failed to load menu. Please try again later.</p>";
     }
 }
 
 // ------------------------------------
-// Render categories
+// Render categories - SAME
 // ------------------------------------
 function renderMenu(categoryMap) {
     const container = document.getElementById("menuContainer");
@@ -62,21 +78,18 @@ function renderMenu(categoryMap) {
 }
 
 // ------------------------------------
-// Render products - ADDED categoryName parameter
+// Render products - SAME
 // ------------------------------------
 function renderProducts(products, container, categoryName) {
     products.forEach(product => {
-        // Determine correct image path based on your server structure
-        let imgPath = "/image/no-image.png"; // Default fallback
+        let imgPath = "/image/no-image.png";
 
         if (product.imageUrl && product.imageUrl.trim() !== "") {
-            // Try different possible paths
             if (product.imageUrl.startsWith('http')) {
                 imgPath = product.imageUrl;
             } else if (product.imageUrl.includes('/')) {
                 imgPath = product.imageUrl;
             } else {
-                // Determine folder based on category
                 let folder = "pizza";
                 if (categoryName.toLowerCase().includes('drink')) {
                     folder = "drink";
@@ -84,10 +97,8 @@ function renderProducts(products, container, categoryName) {
                     folder = "side_dishes";
                 }
 
-                // Try different possible paths
                 imgPath = `/image/${folder}/${product.imageUrl}`;
 
-                // Also try the uploads path as fallback
                 if (!imgPath.includes('.')) {
                     imgPath = `/uploads/products/${product.imageUrl}`;
                 }
@@ -128,14 +139,21 @@ function renderProducts(products, container, categoryName) {
 }
 
 // ------------------------------------
-// Add to cart button
+// Add to cart button - SAME
 // ------------------------------------
 function attachCartListeners() {
     document.querySelectorAll(".add-to-cart").forEach(btn => {
         btn.onclick = function () {
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Please login to add items to cart!");
+                window.location.href = '/login';
+                return;
+            }
+
             const category = this.dataset.category || "";
 
-            // Determine folder based on category
             let folder = "pizza";
             if (category.toLowerCase().includes('drink')) {
                 folder = "drink";
@@ -143,7 +161,6 @@ function attachCartListeners() {
                 folder = "side_dishes";
             }
 
-            // Store full image path in cart
             let imgPath = '/image/no-image.png';
             if (this.dataset.image && this.dataset.image.trim() !== "") {
                 if (this.dataset.image.startsWith('http') || this.dataset.image.includes('/')) {
@@ -157,13 +174,12 @@ function attachCartListeners() {
                 id: this.dataset.id,
                 name: this.dataset.name,
                 price: parseFloat(this.dataset.price),
-                image: imgPath, // Store full path
-                folder: folder // Also store folder for reference
+                image: imgPath,
+                folder: folder
             };
 
             addToCart(product);
 
-            // UI effect
             const old = this.innerText;
             this.innerText = "Added!";
             this.style.background = "green";
@@ -177,7 +193,7 @@ function attachCartListeners() {
 }
 
 // ------------------------------------
-// Cart logic - FIXED to handle image paths correctly
+// Cart logic - SAME
 // ------------------------------------
 function addToCart(product) {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -190,9 +206,9 @@ function addToCart(product) {
             id: product.id,
             name: product.name,
             price: product.price,
-            image: product.image, // Full path already
+            image: product.image,
             quantity: 1,
-            folder: product.folder // Optional: store folder
+            folder: product.folder
         });
     }
 
@@ -201,7 +217,7 @@ function addToCart(product) {
 }
 
 // ------------------------------------
-// Update cart counter
+// Update cart counter - SAME
 // ------------------------------------
 function updateCartCount() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];

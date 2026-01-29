@@ -14,26 +14,32 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@PreAuthorize("hasRole('ADMIN')")
-public class ProductController {
+@RequiredArgsConstructor
+public class ProductController {  // ← REMOVED: class-level @PreAuthorize
 
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
+    // Public endpoint - accessible to all authenticated users (but will filter in service)
+    @GetMapping("/public")
+    public List<Product> getPublicProducts() {
+        return productService.findPublicProducts();  // We'll implement this method
     }
 
+    // Admin-only endpoints
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")  // ← MOVED: from class level to method level
     public List<Product> getAll() {
         return productService.findAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Product getById(@PathVariable Long id) {
         return productService.findById(id);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public Product create(
             @RequestPart("product") Product product,
             @RequestPart("image") MultipartFile image
@@ -42,6 +48,7 @@ public class ProductController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public Product update(
             @PathVariable Long id,
             @RequestPart("product") Product product,
@@ -51,6 +58,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
     }

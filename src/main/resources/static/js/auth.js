@@ -44,27 +44,40 @@ function getUserRole() {
 }
 
 function updateRoleLinks() {
+    const token = getToken();
     const role = getUserRole();
 
     const dashboardLinks = document.querySelectorAll('a[href="/dashboard"]');
     if (dashboardLinks.length) {
         if (role !== 'ROLE_ADMIN') {
             dashboardLinks.forEach(el => el.style.display = 'none');
+        } else {
+            dashboardLinks.forEach(el => el.style.display = '');
         }
     }
 
+    // Show/hide profile links based on login status
     const profileLinks = document.querySelectorAll('a[href="/profile"]');
-    if (profileLinks.length && !role) {
-        profileLinks.forEach(el => el.style.display = 'none');
+    if (profileLinks.length) {
+        if (!token) {
+            profileLinks.forEach(el => el.style.display = 'none');
+        } else {
+            profileLinks.forEach(el => el.style.display = '');
+        }
     }
 }
 
-document.addEventListener('DOMContentLoaded', updateRoleLinks);
-
-
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('auth.js loaded - Token exists:', isLoggedIn());
+
     updateNavigation();
-    checkAuth();
+    updateRoleLinks();
+
+    // Only redirect if we're on profile page without token
+    if (window.location.pathname === '/profile' && !isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
 
     if (isLoggedIn()) {
         const originalFetch = window.fetch;
@@ -75,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     ...options,
                     headers: {
                         ...options.headers,
-                        Authorization: `Bearer ${getToken()}`
+                        'Authorization': `Bearer ${getToken()}`
                     }
                 });
             }
@@ -84,26 +97,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// Simplified click handler - only prevent if not logged in
 document.addEventListener('click', function (e) {
     const accountLink = e.target.closest('#accountLink');
-    if (accountLink) {
+    if (accountLink && !isLoggedIn()) {
         e.preventDefault();
-        window.location.href = isLoggedIn() ? '/profile' : '/login';
+        window.location.href = '/login';
     }
+    // If logged in, let the normal link navigation happen
 });
 
 function checkPageAccess() {
-    const role = getUserRole();
+    const token = getToken();
     const path = window.location.pathname;
 
-    if (path === '/dashboard' && role !== 'ROLE_ADMIN') {
-        alert('Access denied: Admin only');
-        window.location.href = '/';
+    if (path === '/dashboard') {
+        const role = getUserRole();
+        if (role !== 'ROLE_ADMIN') {
+            alert('Access denied: Admin only');
+            window.location.href = '/';
+            return;
+        }
     }
 
-    if (path === '/profile' && !role) {
-        alert('Access denied: Login required');
-        window.location.href = '/login';
-    }
+    // Profile access is already handled by checkAuth() on page load
 }
+
 document.addEventListener('DOMContentLoaded', checkPageAccess);

@@ -1,16 +1,12 @@
 package com.pizza.domino.service;
 
 import com.pizza.domino.model.Product;
-import com.pizza.domino.repository.CategoryRepository;
 import com.pizza.domino.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 import java.nio.file.*;
 import java.util.List;
@@ -28,6 +24,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    @Override
+    public List<Product> findPublicProducts() {
         return productRepository.findAll();
     }
 
