@@ -394,6 +394,13 @@ function confirmCheckout() {
     }
 
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cart.length === 0) {
+        alert('Your cart is already empty!');
+        closeCheckoutModal();
+        return;
+    }
+
     let subtotal = 0;
     let itemsHTML = '';
 
@@ -478,6 +485,7 @@ function confirmCheckout() {
             <div class="thank-you">
                 <p><strong>Thank you for your order!</strong></p>
                 <p>Delivery within 30 minutes</p>
+                <p>Order ID: DOM-${Date.now().toString().slice(-6)}</p>
             </div>
         </div>
     </body>
@@ -491,21 +499,59 @@ function confirmCheckout() {
 
     // Auto print after short delay
     setTimeout(() => {
-        printWindow.print();
-        printWindow.onafterprint = function() {
-            printWindow.close();
-            // Clear cart after successful order
+        try {
+            printWindow.print();
+
+            // Handle different browser behaviors
+            if (printWindow.matchMedia) {
+                printWindow.matchMedia('print').addListener(function(mql) {
+                    if (!mql.matches) {
+                        // Print dialog closed
+                        completeOrder();
+                    }
+                });
+            }
+
+            // Fallback timer for browsers that don't support print event
+            setTimeout(completeOrder, 1000);
+
+        } catch (error) {
+            console.error('Print error:', error);
+            // Even if print fails, complete the order
+            completeOrder();
+        }
+    }, 500);
+
+    // Function to complete the order after printing
+    function completeOrder() {
+        try {
+            // Clear cart from localStorage
             localStorage.removeItem('cart');
+
+            // Update cart count
             updateCartCount();
+
+            // Close modal
             closeCheckoutModal();
+
             // Show success message
-            alert('🎉 Order confirmed!\n\nThank you for your order. Your food will be delivered within 30 minutes.');
-            // Reload to show empty cart
+            alert('🎉 Order confirmed successfully!\n\nThank you for your order. Your food will be delivered within 30 minutes.\nOrder ID: DOM-' + Date.now().toString().slice(-6));
+
+            // Reload cart page if we're on it
             if (document.getElementById("cartContent")) {
                 loadCart();
             }
-        };
-    }, 500);
+
+            // Close print window
+            if (printWindow && !printWindow.closed) {
+                printWindow.close();
+            }
+
+        } catch (error) {
+            console.error('Error completing order:', error);
+            alert('Order placed but there was an error clearing the cart. Please refresh the page.');
+        }
+    }
 }
 
 // Make functions available globally
