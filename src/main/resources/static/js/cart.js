@@ -1,114 +1,246 @@
+// cart.js - UPDATED with page check
 document.addEventListener("DOMContentLoaded", () => {
+    // Only run cart loading on the cart page
+    if (document.getElementById("cartContent")) {
+        loadCart();
+    }
     updateCartCount();
-    loadCartPage();
 });
 
 // --------------------------------------------------
-function loadCartPage() {
-    const container = document.getElementById("cartContent");
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+// Load cart - FIXED IMAGE PATH
+// --------------------------------------------------
+function loadCart() {
+    const cartContent = document.getElementById("cartContent");
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     if (cart.length === 0) {
-        container.innerHTML = `
+        cartContent.innerHTML = `
             <div class="empty_cart">
                 <h2>Your cart is empty</h2>
-                <a href="/menu" class="continue_shopping_btn">Go Shopping</a>
+                <p>Add some delicious items from our menu!</p>
+                <a href="/menu" class="continue_shopping_btn">Browse Menu</a>
             </div>
         `;
         return;
     }
 
+    let html = `
+        <div class="cart_header">
+            <h1>Your Order</h1>
+            <p>Review and checkout your items</p>
+        </div>
+        
+        <div class="cart_content">
+            <div class="cart_items">
+    `;
+
     let subtotal = 0;
-    let itemsHTML = "";
 
-    cart.forEach(item => {
-        subtotal += item.price * item.quantity;
+    cart.forEach((item, index) => {
+        const itemTotal = (item.price || 0) * (item.quantity || 1);
+        subtotal += itemTotal;
 
-        itemsHTML += `
-        <div class="cart_item">
-            <div class="cart_item_image">
-                <img src="${item.image}" onerror="this.src='/image/no-image.png'">
-            </div>
+        // FIXED: Use the image path that's already stored in the cart
+        let imgPath = item.image || '/uploads/products/no-image.png';
 
-            <div class="cart_item_details">
-                <div class="cart_item_name">${item.name}</div>
-                <div class="cart_item_price">$${item.price}</div>
+        // Ensure image path is correct
+        if (imgPath && !imgPath.startsWith('http') && !imgPath.startsWith('/')) {
+            imgPath = '/uploads/products/' + imgPath;
+        }
 
-                <div class="cart_item_controls">
-                    <button class="quantity_btn" onclick="changeQty('${item.id}',-1)">-</button>
-                    <span class="quantity_display">${item.quantity}</span>
-                    <button class="quantity_btn" onclick="changeQty('${item.id}',1)">+</button>
-                    <button class="remove_btn" onclick="removeItem('${item.id}')">Remove</button>
+        html += `
+            <div class="cart_item" data-index="${index}">
+                <div class="cart_item_image">
+                    <img src="${imgPath}" 
+                         alt="${item.name || 'Product'}"
+                         onerror="this.onerror=null; this.src='/uploads/products/no-image.png';">
+                </div>
+                
+                <div class="cart_item_details">
+                    <h3 class="cart_item_name">${item.name || 'Unnamed Product'}</h3>
+                    <p class="cart_item_price">$${(item.price || 0).toFixed(2)} each</p>
+                    
+                    <div class="cart_item_controls">
+                        <button class="quantity_btn minus" data-index="${index}">-</button>
+                        <span class="quantity_display">${item.quantity || 1}</span>
+                        <button class="quantity_btn plus" data-index="${index}">+</button>
+                        <button class="remove_btn" data-index="${index}">Remove</button>
+                    </div>
+                </div>
+                
+                <div class="cart_item_total">
+                    $${itemTotal.toFixed(2)}
                 </div>
             </div>
-
-            <div class="cart_item_total">$${(item.price * item.quantity).toFixed(2)}</div>
-        </div>
         `;
     });
 
-    const delivery = 2.99;
     const tax = subtotal * 0.1;
-    const total = subtotal + delivery + tax;
+    const total = subtotal + tax;
 
-    container.innerHTML = `
-        <div class="cart_header"><h1>Your Cart</h1></div>
-        <div class="cart_content">
-            <div class="cart_items">${itemsHTML}</div>
-
+    html += `
+            </div>
+            
             <div class="cart_summary_card">
-                <p>Subtotal: $${subtotal.toFixed(2)}</p>
-                <p>Delivery: $${delivery}</p>
-                <p>Tax: $${tax.toFixed(2)}</p>
-                <h2>Total: $${total.toFixed(2)}</h2>
-
-                <button class="checkout_btn" onclick="checkout()">Checkout</button>
-                <button class="clear_cart_btn" onclick="clearCart()">Clear Cart</button>
+                <h2 class="cart_summary_title">Order Summary</h2>
+                
+                <div class="cart_summary_row">
+                    <span class="cart_summary_label">Subtotal:</span>
+                    <span class="cart_summary_value">$${subtotal.toFixed(2)}</span>
+                </div>
+                
+                <div class="cart_summary_row">
+                    <span class="cart_summary_label">Tax (10%):</span>
+                    <span class="cart_summary_value">$${tax.toFixed(2)}</span>
+                </div>
+                
+                <div class="cart_summary_total">
+                    <span class="label">Total:</span>
+                    <span class="value">$${total.toFixed(2)}</span>
+                </div>
+                
+                <div class="cart_actions">
+                    <a href="/menu" class="continue_shopping_btn">Continue Shopping</a>
+                    <button class="checkout_btn" id="checkoutBtn">Proceed to Checkout</button>
+                    <button class="clear_cart_btn" id="clearCartBtn">Clear Cart</button>
+                </div>
             </div>
         </div>
     `;
+
+    cartContent.innerHTML = html;
+
+    // Attach event listeners
+    attachCartListeners();
 }
 
 // --------------------------------------------------
-function changeQty(id, change) {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const item = cart.find(i => i.id == id);
+// Attach cart listeners
+// --------------------------------------------------
+function attachCartListeners() {
+    // Quantity minus buttons
+    document.querySelectorAll('.quantity_btn.minus').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            updateQuantity(index, -1);
+        });
+    });
 
-    if (!item) return;
+    // Quantity plus buttons
+    document.querySelectorAll('.quantity_btn.plus').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            updateQuantity(index, 1);
+        });
+    });
 
-    item.quantity += change;
-    if (item.quantity <= 0) cart = cart.filter(i => i.id != id);
+    // Remove buttons
+    document.querySelectorAll('.remove_btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            removeItem(index);
+        });
+    });
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
-    loadCartPage();
+    // Checkout button
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', proceedToCheckout);
+    }
+
+    // Clear cart button
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', clearCart);
+    }
 }
 
 // --------------------------------------------------
-function removeItem(id) {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    cart = cart.filter(i => i.id != id);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
-    loadCartPage();
+// Update quantity
+// --------------------------------------------------
+function updateQuantity(index, change) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (index >= 0 && index < cart.length) {
+        cart[index].quantity = (cart[index].quantity || 1) + change;
+
+        // Remove if quantity is 0 or less
+        if (cart[index].quantity <= 0) {
+            cart.splice(index, 1);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCart();
+        updateCartCount();
+    }
 }
 
+// --------------------------------------------------
+// Remove item
+// --------------------------------------------------
+function removeItem(index) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (index >= 0 && index < cart.length) {
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCart();
+        updateCartCount();
+    }
+}
+
+// --------------------------------------------------
+// Clear cart
 // --------------------------------------------------
 function clearCart() {
-    localStorage.removeItem("cart");
-    updateCartCount();
-    loadCartPage();
+    if (confirm('Are you sure you want to clear your cart?')) {
+        localStorage.removeItem('cart');
+        loadCart();
+        updateCartCount();
+    }
 }
 
+// --------------------------------------------------
+// Update cart count - FIXED
 // --------------------------------------------------
 function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const total = cart.reduce((s, i) => s + i.quantity, 0);
-    document.querySelectorAll("#numberItemInCart").forEach(e => e.textContent = total);
+    try {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
+        document.querySelectorAll('#numberItemInCart').forEach(el => {
+            el.textContent = totalItems;
+        });
+    } catch (error) {
+        console.error("Error updating cart count:", error);
+        document.querySelectorAll('#numberItemInCart').forEach(el => {
+            el.textContent = '0';
+        });
+    }
 }
 
 // --------------------------------------------------
-function checkout() {
-    alert("Checkout success (demo)");
-    clearCart();
+// Proceed to checkout
+// --------------------------------------------------
+function proceedToCheckout() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+
+    // Check authentication
+    const isAuthenticated = document.body.getAttribute('data-user-authenticated') === 'true';
+
+    if (!isAuthenticated) {
+        // Redirect to login or show login modal
+        window.location.href = '/login?redirect=/checkout';
+    } else {
+        window.location.href = '/checkout';
+    }
 }
+
+// Make functions available globally
+window.updateCartCount = updateCartCount;
