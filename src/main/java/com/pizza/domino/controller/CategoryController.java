@@ -74,17 +74,15 @@ public class CategoryController {
         old.setCategoryName(category.getCategoryName());
         old.setDescription(category.getDescription());
         categoryService.save(old);
-        return "redirect:/category";  // ← CHANGED from /admin/category to /category
+        return "redirect:/category";
     }
 
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
-        return "redirect:/category";  // ← CHANGED from /admin/category to /category
+        return "redirect:/category";
     }
-
-    // ===================== REST API =====================
 
     @GetMapping("/api")
     @ResponseBody
@@ -92,7 +90,6 @@ public class CategoryController {
         return categoryService.findAll();
     }
 
-    // GET CATEGORY BY ID - public API
     @GetMapping("/api/{id}")
     @ResponseBody
     public Category getCategoryByIdApi(@PathVariable Long id) {

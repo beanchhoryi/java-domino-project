@@ -59,7 +59,7 @@ public class AuthApiController {
         u.setGender((gender == null || gender.isBlank()) ? "Other" : gender);
         u.setPhone(req.phone());
         u.setAddress(req.address());
-        u.setRole("USER");
+        u.setRole("ROLE_USER");
         u.setCreatedAt(LocalDateTime.now());
         u.setPassword(passwordEncoder.encode(req.password()));
 
@@ -84,6 +84,4 @@ public class AuthApiController {
 
         return new AuthResponse(token, u.getId(), u.getUsername(), u.getRole());
     }
-
-
 }
