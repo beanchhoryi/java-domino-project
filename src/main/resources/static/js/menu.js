@@ -1,110 +1,197 @@
+// menu.js - FULL FIXED VERSION
+
 document.addEventListener("DOMContentLoaded", () => {
     loadMenu();
+    updateCartCount();
 });
 
 // --------------------------------------------------
-// Category → folder mapping
+// Load menu from API
 // --------------------------------------------------
-const categoryFolderMap = {
-    "Fast Food": "pizza",
-    "Drink": "drink",
-    "Side Dish": "side_dishes"
-};
+async function loadMenu() {
+    const container = document.getElementById("menuContainer");
 
-// --------------------------------------------------
-// Load menu (PRODUCT-DRIVEN)
-// --------------------------------------------------
-function loadMenu() {
-    fetch("http://localhost:8080/api/admin/products")
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to load products");
-            return res.json();
-        })
-        .then(products => {
-            const categoryMap = {};
+    try {
+        const response = await fetch("/api/products");
 
-            products.forEach(product => {
-                const cat = product.category;
+        if (!response.ok) {
+            throw new Error("Failed to load products");
+        }
 
-                if (!categoryMap[cat.id]) {
-                    categoryMap[cat.id] = {
-                        id: cat.id,
-                        categoryName: cat.categoryName,
-                        products: []
-                    };
-                }
+        const products = await response.json();
 
-                categoryMap[cat.id].products.push(product);
-            });
+        if (!products || products.length === 0) {
+            container.innerHTML = "<p>No products available.</p>";
+            return;
+        }
 
-            renderMenu(Object.values(categoryMap));
-        })
-        .catch(err => {
-            console.error("Menu load error:", err);
-            document.getElementById("menuContainer").innerHTML =
-                "<p>Failed to load menu</p>";
+        const categoryMap = {};
+
+        products.forEach(product => {
+            const categoryName = product.category?.categoryName || "Uncategorized";
+
+            if (!categoryMap[categoryName]) {
+                categoryMap[categoryName] = {
+                    categoryName: categoryName,
+                    products: []
+                };
+            }
+
+            categoryMap[categoryName].products.push(product);
         });
+
+        renderMenu(Object.values(categoryMap));
+
+    } catch (error) {
+        console.error("Menu error:", error);
+        container.innerHTML = "<p style='color:red'>Error loading menu.</p>";
+    }
 }
 
 // --------------------------------------------------
-// Render menu
+// Render Menu
 // --------------------------------------------------
 function renderMenu(categories) {
     const container = document.getElementById("menuContainer");
     container.innerHTML = "";
 
-    if (!categories.length) {
-        container.innerHTML = "<p>No categories found.</p>";
-        return;
-    }
-
     categories.forEach(category => {
-        const categoryEl = document.createElement("div");
+        const section = document.createElement("div");
+        section.className = "category-section";
 
-        categoryEl.innerHTML = `
-            <h1>${category.categoryName}</h1>
-            <div class="pizza">
-                <div class="pizza_menu" id="category-${category.id}"></div>
+        section.innerHTML = `<h1>${category.categoryName}</h1><div class="pizza_menu"></div>`;
+        container.appendChild(section);
+
+        const productDiv = section.querySelector(".pizza_menu");
+        renderProducts(category.products, productDiv, category.categoryName);
+    });
+}
+
+// --------------------------------------------------
+// Render Products
+// --------------------------------------------------
+function renderProducts(products, container, categoryName) {
+
+    products.forEach(product => {
+        let folder = "pizza";
+        if (categoryName.includes("Drink")) folder = "drink";
+        if (categoryName.includes("Side")) folder = "side_dishes";
+
+        let imgPath = product.imageUrl
+            ? `/image/${folder}/${product.imageUrl}`
+            : "/image/no-image.png";
+
+        const div = document.createElement("div");
+        div.className = "menu";
+
+        div.innerHTML = `
+            <img src="${imgPath}" width="400" 
+                 onerror="this.src='/image/no-image.png'">
+
+            <div class="info_bar">
+                <p><b>${product.productName}</b><br>$${product.price.toFixed(2)}</p>
+
+                <button class="add-to-cart-btn"
+                    data-id="${product.id}"
+                    data-name="${product.productName}"
+                    data-price="${product.price}"
+                    data-image="${product.imageUrl}"
+                    data-folder="${folder}">
+                    Add to Cart
+                </button>
             </div>
         `;
 
-        container.appendChild(categoryEl);
-
-        const productContainer =
-            document.getElementById(`category-${category.id}`);
-
-        if (!category.products.length) {
-            productContainer.innerHTML =
-                "<p>No products in this category.</p>";
-            return;
-        }
-
-        category.products.forEach(product => {
-            const folder =
-                categoryFolderMap[category.categoryName] || "default";
-z
-            const img = product.image
-                ? `/image/${folder}/${product.image}`
-                : `/image/no-image.png`;
-
-            productContainer.innerHTML += `
-                <div class="menu">
-                    <img src="${img}" width="200" alt="${product.productName}">
-                    <div class="info_bar">
-                        <p>
-                            <b>${product.productName}</b><br>
-                            $${product.price}
-                        </p>
-                        <button class="add-to-cart"
-                            data-id="${product.id}"
-                            data-name="${product.productName}"
-                            data-price="${product.price}"
-                            data-image="${product.image || ''}">
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
+        container.appendChild(div);
     });
+
+    attachCartListeners();
+}
+
+// --------------------------------------------------
+// Add To Cart Logic
+// --------------------------------------------------
+function addItemToCart(product) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Fix image path
+    let imagePath = product.image || "/image/no-image.png";
+    if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
+        imagePath = `/image/${product.folder}/${imagePath}`;
+    }
+
+    const cartItem = {
+        id: product.id,
+        name: product.name,
+        price: parseFloat(product.price),
+        quantity: 1,
+        image: imagePath
+    };
+
+    const existing = cart.find(item => item.id == cartItem.id);
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push(cartItem);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    showCartNotification(cartItem.name + " added to cart!");
+}
+
+// --------------------------------------------------
+// Button Click Listeners
+// --------------------------------------------------
+function attachCartListeners() {
+    document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+        btn.onclick = function () {
+            const product = {
+                id: this.dataset.id,
+                name: this.dataset.name,
+                price: this.dataset.price,
+                image: this.dataset.image,
+                folder: this.dataset.folder
+            };
+
+            addItemToCart(product);
+
+            // UI effect
+            const old = this.innerText;
+            this.innerText = "Added!";
+            this.style.background = "green";
+
+            setTimeout(() => {
+                this.innerText = old;
+                this.style.background = "#0b648f";
+            }, 1200);
+        };
+    });
+}
+
+// --------------------------------------------------
+// Cart Counter
+// --------------------------------------------------
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cart.reduce((s, i) => s + i.quantity, 0);
+
+    document.querySelectorAll("#numberItemInCart").forEach(e => e.textContent = total);
+}
+
+// --------------------------------------------------
+// Notification Popup
+// --------------------------------------------------
+function showCartNotification(msg) {
+    const div = document.createElement("div");
+    div.innerText = msg;
+    div.style.cssText = `
+        position:fixed; top:80px; right:20px;
+        background:#4CAF50; color:white;
+        padding:10px 20px; border-radius:6px;
+        font-weight:bold; z-index:9999;
+    `;
+    document.body.appendChild(div);
+
+    setTimeout(() => div.remove(), 2000);
 }

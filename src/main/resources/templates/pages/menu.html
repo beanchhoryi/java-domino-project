@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Menu</title>
-
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/menu.css">
-    <script src="/js/menu.js" defer></script>
-    <script src="/js/cart.js" defer></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/menu.css}">
+    <script th:src="@{/js/menu.js}" defer></script>
+    <script th:src="@{/js/cart.js}" defer></script>
 </head>
 
 <body style="margin:0">
@@ -16,19 +15,19 @@
     <div class="container_menu">
         <div class="container_menu_left">
             <ul>
-                <li><img src="/image/domino_logo.png" width="65"></li>
-                <li><a href="/">Home</a></li>
-                <li><a href="/menu">Menu</a></li>
-                <li><a href="/cart">Order</a></li>
-                <li><a href="/contacts">Contact</a></li>
+                <li><a th:href="@{/}"><img th:src="@{/image/domino_logo.png}" width="65"></a></li>
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/menu}">Menu</a></li>
+                <li><a th:href="@{/cart}">Order</a></li>
+                <li><a th:href="@{/contacts}">Contact</a></li>
             </ul>
         </div>
 
         <div class="container_menu_right">
             <ul>
                 <li><p id="numberItemInCart">0</p></li>
-                <li><a href="/cart"><img src="/icon/cart.png" width="25"></a></li>
-                <li><a id="accountLink" href="#"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
+                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25"></a></li>
+                <li><a id="accountLink" href="#"><img th:src="@{/icon/user.png}" width="23" height="23"></a></li>
             </ul>
         </div>
     </div>
@@ -37,11 +36,16 @@
 <!-- FETCH API TARGET -->
 <div class="body_container">
     <div class="menu_container" id="menuContainer">
-        <!-- menu.js renders here -->
+        <!-- Loading message -->
+        <p>Loading menu...</p>
     </div>
 </div>
 
-<footer style="background:#0b648f; margin-top:50px"></footer>
+<footer style="background:#0b648f; margin-top:50px; padding: 20px; color: white;">
+    <div style="text-align: center;">
+        <p>© 2024 Domino Pizza. All rights reserved.</p>
+    </div>
+</footer>
 <script th:src="@{/js/auth.js}" defer></script>
 </body>
 </html>
