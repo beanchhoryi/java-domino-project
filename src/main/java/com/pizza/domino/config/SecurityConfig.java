@@ -48,7 +48,9 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/images/**",
                                 "/image/**",
-                                "/img/**"
+                                "/img/**",
+                                "/menu",           // ← ALLOW menu for everyone
+                                "/api/products/public"  // ← ALLOW public products API
                         ).permitAll()
                         .requestMatchers("/profile", "/dashboard").permitAll()
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")

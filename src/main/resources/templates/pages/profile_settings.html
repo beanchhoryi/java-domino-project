@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -335,17 +337,22 @@
             <h2>My Account</h2>
         </div>
 
+        <!-- Look for this section in the sidebar -->
         <div class="sidebar-content">
             <h2>My Profile</h2>
             <ul class="profile-nav">
                 <li><a th:href="@{/profile(tab='info')}" th:classappend="${tab == 'info'} ? 'active' : ''">Account Information</a></li>
                 <li><a th:href="@{/profile(tab='edit')}" th:classappend="${tab == 'edit'} ? 'active' : ''">Edit Profile</a></li>
-                <li><a th:href="@{/dashboard}">Dashboard</a></li>
+
+                <!-- Add security check for Dashboard link -->
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
             </ul>
 
             <h2>My Activities</h2>
             <ul class="profile-nav">
-                <li><a th:href="@{/profile(tab='info')}">Order Record</a></li>
+                <li><a th:href="@{/orders}">Order Record</a></li>
                 <li><a th:href="@{/cart}">Cart</a></li>
             </ul>
 
@@ -454,7 +461,24 @@
 
     </main>
 </div>
-
+<!-- Add this to your profile_settings.html before closing body tag -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            console.log("Token exists");
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log("JWT Payload:", payload);
+                console.log("Role in token:", payload.role);
+            } catch(e) {
+                console.error("Error parsing token:", e);
+            }
+        } else {
+            console.log("No token found");
+        }
+    });
+</script>
 <script>
     function previewAvatar(input) {
         if (input.files && input.files[0]) {

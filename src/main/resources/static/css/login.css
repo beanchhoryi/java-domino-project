@@ -74,7 +74,7 @@ body {
     background-position: 10px center;
 }
 
-#loginForm input#username {
+#loginForm input#usernameOrEmail {
     background-image: url("../image/user.png");
     background-size: 20px;
 }

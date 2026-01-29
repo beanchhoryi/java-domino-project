@@ -8,6 +8,8 @@ public interface ProductService {
 
     List<Product> findAll();
 
+    List<Product> findPublicProducts();  // ← ADDED: New method for public access
+
     Product findById(Long id);
 
     Product create(Product product, MultipartFile image) throws Exception;
@@ -19,4 +21,3 @@ public interface ProductService {
     long count();
 
 }
-
