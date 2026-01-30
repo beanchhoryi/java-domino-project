@@ -31,7 +31,6 @@ public class JwtService {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
 
-        // Extract role from authorities
         String role = userDetails.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
@@ -50,7 +49,6 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    // Optional: Method to extract role from token
     public String extractRole(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("role", String.class);

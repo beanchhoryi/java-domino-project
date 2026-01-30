@@ -39,18 +39,35 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // public
                         .requestMatchers(
-                                "/uploads/**",
                                 "/",
                                 "/login",
                                 "/register",
-                                "/api/auth/**",
+                                "/menu",
+                                "/contacts",
+                                "/cart",
+                                "/orders",
+                                "/profile",
+                                "/profile/**",
+                                "/invoice/**",
+
+                                // Static resources
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
                                 "/image/**",
                                 "/img/**",
-                                "/menu",           // ← ALLOW menu for everyone
-                                "/api/products/public"  // ← ALLOW public products API
+                                "/icon/**",
+                                "/uploads/**",
+
+                                // API endpoints
+                                "/api/auth/**",
+                                "/api/products/public",
+                                "/api/orders/**",  // Allow order API
+
+                                // Favicon
+                                "/favicon.ico",
+                                "/favicon.*",
+                                "/*.ico"
                         ).permitAll()
                         .requestMatchers("/profile", "/dashboard").permitAll()
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")

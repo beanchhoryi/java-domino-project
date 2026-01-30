@@ -119,8 +119,7 @@ function checkPageAccess() {
             return;
         }
     }
-
-    // Profile access is already handled by checkAuth() on page load
 }
+
 
 document.addEventListener('DOMContentLoaded', checkPageAccess);

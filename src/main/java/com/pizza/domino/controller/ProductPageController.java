@@ -24,8 +24,6 @@ public class ProductPageController {
         this.categoryService = categoryService;
     }
 
-
-
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String productsPage(Model model) {
@@ -83,7 +81,7 @@ public class ProductPageController {
         return "redirect:/products";
     }
 
-    @GetMapping("/api/public")  // ← ADDED: Public API endpoint
+    @GetMapping("/api/public")
     @ResponseBody
     public List<Product> getPublicProductsApi() {
         return productService.findPublicProducts();

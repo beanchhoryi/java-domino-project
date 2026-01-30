@@ -193,7 +193,7 @@ function removeItem(index) {
 // --------------------------------------------------
 // Clear cart
 // --------------------------------------------------
-function clearCart() {
+async function clearCart() {
     if (confirm('Are you sure you want to clear your cart?')) {
         localStorage.removeItem('cart');
         loadCart();
@@ -364,7 +364,7 @@ function showCheckoutModal() {
 }
 
 // --------------------------------------------------
-// Close checkout modal - ADD THIS FUNCTION
+// Close checkout modal (make it global)
 // --------------------------------------------------
 function closeCheckoutModal() {
     const modal = document.getElementById('checkoutModal');
@@ -381,7 +381,62 @@ function closeCheckoutModal() {
 }
 
 // --------------------------------------------------
-// Confirm checkout - ADD THIS FUNCTION
+// Save order to database (make it global)
+// --------------------------------------------------
+async function saveOrderToDatabase(cart, customerInfo, total) {
+    try {
+        console.log("=== DEBUG: Cart Contents ===");
+        cart.forEach((item, index) => {
+            console.log(`Item ${index}:`, item);
+        });
+
+        // Prepare order data
+        const orderData = {
+            items: cart.map(item => ({
+                productId: item.id ? parseInt(item.id) : null,
+                productName: item.name || 'Unknown Product',
+                price: item.price || 0.0,
+                quantity: item.quantity || 1,
+                total: (item.price || 0) * (item.quantity || 1)
+            })),
+            customerInfo: {
+                name: customerInfo.name,
+                phone: customerInfo.phone,
+                address: customerInfo.address
+            },
+            subtotal: total / 1.1,
+            tax: total * 0.1,
+            total: total
+        };
+
+        console.log("=== DEBUG: Order Data ===", orderData);
+
+        // Simple fetch without CSRF
+        const response = await fetch('/api/orders/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+        console.log("=== DEBUG: API Response ===", result);
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to save order');
+        }
+
+        return result;
+
+    } catch (error) {
+        console.error('Error saving order:', error);
+        throw error;
+    }
+}
+
+// --------------------------------------------------
+// Confirm checkout
 // --------------------------------------------------
 function confirmCheckout() {
     const name = document.getElementById('customerName')?.value;
@@ -497,6 +552,55 @@ function confirmCheckout() {
     printWindow.document.close();
     printWindow.focus();
 
+    // Function to complete the order after printing
+    async function completeOrder() {
+        try {
+            // Save order to database
+            const orderResult = await saveOrderToDatabase(cart, {
+                name: name,
+                phone: phone,
+                address: address
+            }, total);
+
+            if (orderResult) {
+                console.log('Order saved with ID:', orderResult.orderId);
+            }
+
+            // Clear cart from localStorage
+            localStorage.removeItem('cart');
+
+            // Update cart count
+            updateCartCount();
+
+            // Close modal
+            closeCheckoutModal();
+
+            // Show success message
+            alert('🎉 Order confirmed successfully!\n\n' +
+                'Thank you for your order. Your food will be delivered within 30 minutes.\n' +
+                'Order ID: DOM-' + Date.now().toString().slice(-6));
+
+            // Reload cart page if we're on it
+            if (document.getElementById("cartContent")) {
+                loadCart();
+            }
+
+            // Redirect to order history after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/orders';
+            }, 2000);
+
+            // Close print window
+            if (printWindow && !printWindow.closed) {
+                printWindow.close();
+            }
+
+        } catch (error) {
+            console.error('Error completing order:', error);
+            alert('Order placed but there was an error. Please refresh the page.');
+        }
+    }
+
     // Auto print after short delay
     setTimeout(() => {
         try {
@@ -521,38 +625,10 @@ function confirmCheckout() {
             completeOrder();
         }
     }, 500);
-
-    // Function to complete the order after printing
-    function completeOrder() {
-        try {
-            // Clear cart from localStorage
-            localStorage.removeItem('cart');
-
-            // Update cart count
-            updateCartCount();
-
-            // Close modal
-            closeCheckoutModal();
-
-            // Show success message
-            alert('🎉 Order confirmed successfully!\n\nThank you for your order. Your food will be delivered within 30 minutes.\nOrder ID: DOM-' + Date.now().toString().slice(-6));
-
-            // Reload cart page if we're on it
-            if (document.getElementById("cartContent")) {
-                loadCart();
-            }
-
-            // Close print window
-            if (printWindow && !printWindow.closed) {
-                printWindow.close();
-            }
-
-        } catch (error) {
-            console.error('Error completing order:', error);
-            alert('Order placed but there was an error clearing the cart. Please refresh the page.');
-        }
-    }
 }
 
 // Make functions available globally
 window.updateCartCount = updateCartCount;
+window.closeCheckoutModal = closeCheckoutModal;
+window.saveOrderToDatabase = saveOrderToDatabase;
+window.confirmCheckout = confirmCheckout;

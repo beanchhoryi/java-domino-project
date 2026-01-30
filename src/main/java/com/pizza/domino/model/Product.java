@@ -15,7 +15,7 @@ public class Product {
 
     private String description;
 
-    private BigDecimal price;
+    private Double price;
 
     @Column(name = "stock_qty")
     private Integer stockQty;
@@ -37,7 +37,7 @@ public class Product {
 
     public Product() {}
 
-    public Product(String productName, String description, BigDecimal price,
+    public Product(String productName, String description, Double price,
                    Integer stockQty, String imageUrl, Category category) {
         this.productName = productName;
         this.description = description;
@@ -56,8 +56,8 @@ public class Product {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 
     public Integer getStockQty() { return stockQty; }
     public void setStockQty(Integer stockQty) { this.stockQty = stockQty; }

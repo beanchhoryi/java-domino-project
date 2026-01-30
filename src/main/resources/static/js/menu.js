@@ -196,23 +196,26 @@ function attachCartListeners() {
 // Cart logic - SAME
 // ------------------------------------
 function addToCart(product) {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    const existing = cart.find(item => item.id == product.id);
-    if (existing) {
-        existing.quantity++;
+    // Product should have these properties from backend:
+    // id, productName, price, imageUrl, etc.
+
+    const existingItem = cart.find(item => item.id === product.id);
+
+    if (existingItem) {
+        existingItem.quantity += 1;
     } else {
         cart.push({
             id: product.id,
-            name: product.name,
+            name: product.productName || product.name, // Use productName from backend
             price: product.price,
-            image: product.image,
             quantity: 1,
-            folder: product.folder
+            image: product.imageUrl || product.image
         });
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
 }
 

@@ -19,15 +19,13 @@ public class ProductController {  // ← REMOVED: class-level @PreAuthorize
 
     private final ProductService productService;
 
-    // Public endpoint - accessible to all authenticated users (but will filter in service)
     @GetMapping("/public")
     public List<Product> getPublicProducts() {
-        return productService.findPublicProducts();  // We'll implement this method
+        return productService.findPublicProducts();
     }
 
-    // Admin-only endpoints
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")  // ← MOVED: from class level to method level
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Product> getAll() {
         return productService.findAll();
     }

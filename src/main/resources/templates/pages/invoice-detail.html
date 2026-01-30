@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Invoice ' + ${invoice.invoiceNumber} + ' - Domino\'s Pizza'">Invoice</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/invoice.css}">
+</head>
+<body style="margin: 0;">
+<!-- Navigation - Same as order-history -->
+<div class="menu">
+    <div class="container_menu">
+        <div class="container_menu_left">
+            <ul>
+                <a th:href="@{/}"><li><img th:src="@{/image/domino_logo.png}" width="65" height="65"></li></a>
+                <a th:href="@{/}"><li>Home</li></a>
+                <a th:href="@{/menu}"><li>Menu</li></a>
+                <a th:href="@{/cart}"><li>Order</li></a>
+                <a th:href="@{/contacts}"><li>Contact</li></a>
+            </ul>
+        </div>
+        <div class="container_menu_right">
+            <ul>
+                <li><p id="numberItemInCart">0</p></li>
+                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25px" height="25px"></a></li>
+                <li><a th:href="@{/profile}" id="accountLink"><img th:src="@{/icon/user.png}" width="23px" height="23px"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="body_container">
+    <div class="invoice-container" th:if="${invoice != null}">
+        <h2 class="company-name">Domino's Pizza - Invoice</h2>
+
+        <div class="greeting">
+            <p>Thank you for your order, <strong th:text="${invoice.customerName}"></strong>!</p>
+        </div>
+
+        <div class="info-section">
+            <div class="billing-info">
+                <h3 class="section-title">Order Information</h3>
+                <p><strong>Invoice #:</strong> <span th:text="${invoice.invoiceNumber}"></span></p>
+                <p><strong>Order Date:</strong> <span th:text="${#temporals.format(invoice.orderDate, 'MMMM dd, yyyy HH:mm')}"></span></p>
+                <p><strong>Status:</strong> <span th:text="${invoice.status}" th:class="'status-' + ${invoice.status.toLowerCase()}"></span></p>
+            </div>
+
+            <div class="payment-info">
+                <h3 class="section-title">Customer Information</h3>
+                <p><strong>Name:</strong> <span th:text="${invoice.customerName}"></span></p>
+                <p><strong>Phone:</strong> <span th:text="${invoice.customerPhone}"></span></p>
+                <p><strong>Address:</strong> <span th:text="${invoice.deliveryAddress}"></span></p>
+                <p><strong>Payment Method:</strong> <span th:text="${invoice.paymentMethod}"></span></p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Order Items -->
+        <h3>Order Items</h3>
+        <table class="item-table">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${invoice.items}">
+                <td th:text="${item.productName}"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(item.price, 1, 2)}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(item.total, 1, 2)}"></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3" style="text-align: right;"><strong>Subtotal:</strong></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(invoice.subtotal, 1, 2)}"></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: right;"><strong>Tax (10%):</strong></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(invoice.tax, 1, 2)}"></td>
+            </tr>
+            <tr style="font-weight: bold; font-size: 18px;">
+                <td colspan="3" style="text-align: right;"><strong>TOTAL:</strong></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(invoice.total, 1, 2)}" style="color: #e21737;"></td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="divider"></div>
+
+        <div class="print-btn-container">
+            <button onclick="window.print()" class="btn">Print Invoice</button>
+            <a th:href="@{/orders}" class="btn btn-back">Back to Order History</a>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for choosing Domino's Pizza!</p>
+            <p>Delivery within 30 minutes guaranteed.</p>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="error-message">
+        <p th:text="${error}"></p>
+        <a th:href="@{/orders}">Back to Order History</a>
+    </div>
+</div>
+
+<script th:src="@{/js/cart.js}"></script>
+</body>
+</html>

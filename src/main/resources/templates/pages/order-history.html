@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - Domino's Pizza</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/order-history.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="margin: 0px 0px 0px 0px;" th:attr="data-user-authenticated=${#authentication} ? 'true' : 'false'">
+
+<!-- Navigation - DIRECT COPY FROM OTHER PAGES -->
+<div class="menu">
+    <div class="container_menu">
+        <div class="container_menu_left">
+            <ul>
+                <a th:href="@{/}"><li><img th:src="@{/image/domino_logo.png}" width="65" height="65" alt="Domino's Logo"></li></a>
+                <a th:href="@{/}"><li>Home</li></a>
+                <a th:href="@{/menu}"><li>Menu</li></a>
+                <a th:href="@{/cart}"><li>Order</li></a>
+                <a th:href="@{/contacts}"><li>Contact</li></a>
+            </ul>
+        </div>
+        <div class="container_menu_right">
+            <ul>
+                <li><p id="numberItemInCart">0</p></li>
+                <li><a th:href="@{/cart}"><img th:src="@{/icon/cart.png}" width="25px" height="25px" alt="Cart"></a></li>
+                <li>
+                    <a th:href="@{/profile}" id="accountLink">
+                        <img th:src="@{/icon/user.png}" width="23px" height="23px" alt="Account">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="body_container">
+    <div class="order-history-container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-history"></i> My Order History</h1>
+            <p>View and track all your past orders</p>
+        </div>
+
+        <!-- Stats Cards - only show if we have data -->
+        <div th:if="${totalCount != null}" class="stats-cards">
+            <div class="stat-card total">
+                <i class="fas fa-shopping-bag"></i>
+                <h3 th:text="${totalCount}">0</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="stat-card pending">
+                <i class="fas fa-clock"></i>
+                <h3 th:text="${pendingCount}">0</h3>
+                <p>Pending</p>
+            </div>
+            <div class="stat-card completed">
+                <i class="fas fa-check-circle"></i>
+                <h3 th:text="${completedCount}">0</h3>
+                <p>Completed</p>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-tabs">
+                <a th:href="@{/orders}" th:classappend="${selectedStatus == null} ? 'active' : ''">
+                    <i class="fas fa-list"></i> All Orders
+                </a>
+                <a th:href="@{/orders(status='PENDING')}" th:classappend="${selectedStatus == 'PENDING'} ? 'active' : ''">
+                    <i class="fas fa-clock"></i> Pending
+                </a>
+                <a th:href="@{/orders(status='COMPLETED')}" th:classappend="${selectedStatus == 'COMPLETED'} ? 'active' : ''">
+                    <i class="fas fa-check-circle"></i> Completed
+                </a>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchOrders" placeholder="Search orders...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            <div th:if="${orders != null and !orders.isEmpty()}">
+                <table class="orders-table">
+                    <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date & Time</th>
+                        <th>Items</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}" th:class="'order-row ' + ${order.status.toLowerCase()}">
+                        <td class="order-number">
+                            <strong th:text="${order.invoiceNumber}">DOM-123456</strong>
+                        </td>
+                        <td class="order-date">
+                            <span th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy')}"></span>
+                            <br>
+                            <small th:text="${#temporals.format(order.orderDate, 'hh:mm a')}"></small>
+                        </td>
+                        <td class="order-items">
+                            <div th:each="item, iterStat : ${order.items}" th:if="${iterStat.index < 2}">
+                                <span th:text="${item.quantity} + '× ' + ${item.productName}"></span>
+                            </div>
+                            <div th:if="${order.items.size() > 2}">
+                                <small>+ <span th:text="${order.items.size() - 2}"></span> more items</small>
+                            </div>
+                        </td>
+                        <td class="order-total">
+                            <strong th:text="'$' + ${#numbers.formatDecimal(order.total, 1, 2)}"></strong>
+                        </td>
+                        <td class="order-status">
+                                <span th:text="${order.status}"
+                                      th:class="'status-badge status-' + ${order.status.toLowerCase()}">
+                                    PENDING
+                                </span>
+                        </td>
+                        <td class="order-actions">
+                            <a th:href="@{/invoice/{id}(id=${order.id})}"
+                               class="btn-view" title="View Details">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <button class="btn-reorder"
+                                    th:data-order-id="${order.id}"
+                                    title="Reorder these items">
+                                <i class="fas fa-redo"></i> Reorder
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${orders == null or orders.isEmpty()}" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3>No Orders Yet</h3>
+                <p>You haven't placed any orders yet. Start by exploring our menu!</p>
+                <a th:href="@{/menu}" class="btn-browse">
+                    <i class="fas fa-pizza-slice"></i> Browse Menu
+                </a>
+            </div>
+
+            <!-- Error State -->
+            <div th:if="${error}" class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error Loading Orders</h3>
+                <p th:text="${error}"></p>
+                <button onclick="window.location.reload()" class="btn-retry">
+                    <i class="fas fa-sync-alt"></i> Try Again
+                </button>
+            </div>
+        </div>
+
+        <!-- Order Summary Modal -->
+        <div id="orderModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Order Details</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="orderDetails">
+                    <!-- Will be loaded via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer - Direct Copy -->
+<footer style="background-color: #0b648f; width: 100%; margin-top: 50px;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 20px; vertical-align: top;">
+                <div class="footer_left">
+                    <p style="color: white; font-size: 16px; margin-bottom: 15px; font-weight: 600;">Our Social media:</p>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; gap: 20px;">
+                        <li>
+                            <a href="https://www.facebook.com/DominosPizzaCambodia/" target="_blank">
+                                <img src="/icon/facebook.png" alt="Facebook" style="width: 32px; height: 32px;">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.instagram.com/dominos/?hl=en" target="_blank">
+                                <img src="/icon/instagram.png" alt="Instagram" style="width: 32px; height: 32px;">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.tiktok.com/@dominos.pizza.cam?is_from_webapp=1&sender_device=pc" target="_blank">
+                                <img src="/icon/tiktok.png" alt="TikTok" style="width: 32px; height: 32px;">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.youtube.com/@dominos" target="_blank">
+                                <img src="/icon/youtube.png" alt="YouTube" style="width: 32px; height: 32px;">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+            <td style="padding: 20px; vertical-align: top;">
+                <div class="footer_right">
+                    <!-- Empty for now, can add content later -->
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="description" style="padding: 20px; padding-top: 0;">
+        <p style="color: white; font-size: 14px; line-height: 1.6; margin: 0;">
+            <br><br>Any Delivery Charge is not a tip paid to your driver. <br>Please reward your driver for awesomeness. Our drivers carry less than 10$. Minimum purchase required for delivery and for mode of payment is strictly Cash On Delivery. The 30-minute Delivery Commitment starts from the time of completion of call. <br><br>Our Operating hours: 10:00 AM - 10:00 PM and Delivery service start from 10:00 AM - 9:30 PM.
+            <br><br> Domino's Pizza Cambodia reserves the right to modify or supplement this policy at any time. If a material change to the terms of this policy is made, Domino's will post a notice on its homepage and a link to the new policy.
+            Our Guarantee: If you are not completely satisfied with your Domino's Pizza experience, we will make it right or refund your money.
+        </p>
+    </div>
+</footer>
+
+<script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/cart.js}"></script>
+<script th:src="@{/js/order-history.js}" defer></script>
+</body>
+</html>
