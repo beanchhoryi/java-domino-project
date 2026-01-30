@@ -62,14 +62,16 @@ public class SecurityConfig {
                                 // API endpoints
                                 "/api/auth/**",
                                 "/api/products/public",
-                                "/api/orders/**",  // Allow order API
+                                "/api/orders/**",
+                                "/api/categories",           // ← ADD THIS
+                                "/api/categories/**",
 
                                 // Favicon
                                 "/favicon.ico",
                                 "/favicon.*",
                                 "/*.ico"
                         ).permitAll()
-                        .requestMatchers("/profile", "/dashboard").permitAll()
+                        .requestMatchers("/profile").permitAll()
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
